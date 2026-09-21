@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personal Portfolio</title>
+<style>
+  /* 1. CSS Variables & Dark Mode */
+  :root {
+    --primary: #0f766e;
+    --accent: #14b8a6;
+    --bg: #f0fdfa;
+    --card-bg: #ffffff;
+    --nav-bg: #1e293b;
+    --text: #1e293b;
+    --radius: 12px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --primary: #2dd4bf;
+      --accent: #14b8a6;
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --nav-bg: #020617;
+      --text: #f8fafc;
+    }
+  }
+
+  /* Base Reset */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* 2. Fixed Navigation Bar */
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--nav-bg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 32px;
+    z-index: 1000;
+  }
+
+  .nav-logo {
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 20px;
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 20px;
+  }
+
+  .nav-links a {
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.2s ease;
+  }
+
+  .nav-links a:hover {
+    color: var(--accent);
+  }
+
+  /* 3. Hero Section with Fade-in @keyframes */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .hero {
+    margin-top: 60px;
+    padding: 80px 20px;
+    text-align: center;
+    background: linear-gradient(135deg, var(--bg), var(--card-bg));
+    animation: fadeIn 1s ease-out forwards;
+  }
+
+  .hero h1 {
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 12px;
+  }
+
+  .hero p {
+    font-size: 1.25rem;
+    opacity: 0.9;
+  }
+
+  /* Main Container */
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  /* 5. Sticky Section Heading */
+  .sticky-header {
+    position: sticky;
+    top: 60px; /* Offset for fixed navbar height */
+    background-color: var(--bg);
+    padding: 16px 0;
+    margin-bottom: 24px;
+    color: var(--primary);
+    font-size: 1.8rem;
+    border-bottom: 2px solid var(--accent);
+    z-index: 10;
+  }
+
+  /* 4. Responsive Grid & Skill Cards */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  @media (min-width: 640px) {
+    .grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .card {
+    background-color: var(--card-bg);
+    border: 2px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 24px;
+    font-weight: 600;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    /* Transition on base class so it plays on enter AND exit */
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 20px -5px rgba(20, 184, 166, 0.3);
+  }
+
+  /* Pseudo-element Emoji Icon using attr() */
+  .card[data-icon]::before {
+    content: attr(data-icon) ' ';
+    font-size: 2.2rem;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  /* Additional Content to enable scrolling */
+  .extra-section {
+    height: 400px;
+    margin-top: 40px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- Fixed Navigation Bar -->
+  <nav class="nav">
+    <a href="#" class="nav-logo">DevPortfolio</a>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section with Fade-in Animation -->
+  <header class="hero" id="about">
+    <h1>Alex Rivera</h1>
+    <p>Computer Science & Web Engineering Major</p>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="container">
+    
+    <!-- Sticky Section Heading -->
+    <h2 class="sticky-header" id="skills">Technical Skills</h2>
+
+    <!-- Responsive Grid of Cards -->
+    <div class="grid">
+      <div class="card" data-icon="🌐">HTML5 Structure</div>
+      <div class="card" data-icon="🎨">CSS3 & Styling</div>
+      <div class="card" data-icon="⚡">JavaScript Logic</div>
+      <div class="card" data-icon="📐">Flexbox Layouts</div>
+      <div class="card" data-icon="🗂">Grid Systems</div>
+      <div class="card" data-icon="📱">Responsive Design</div>
+    </div>
+
+    <!-- Extra Space to Demonstrate Sticky Heading and Scroll -->
+    <div class="extra-section"></div>
+  </main>
+
+</body>
+</html>

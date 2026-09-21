@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<style>
+  /* :root variables — --primary, --accent, --bg, --text, --radius */
+  :root {
+    --primary: #0f766e;
+    --accent: #14b8a6;
+    --bg: #f0fdfa;
+    --card-bg: #ffffff;
+    --text: #1e293b;
+    --radius: 12px;
+  }
+
+  /* * reset */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* body styles */
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    padding: 40px 20px;
+    max-width: 960px;
+    margin: 0 auto;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  h1 {
+    margin-bottom: 24px;
+    color: var(--primary);
+  }
+
+  /* .grid — display:grid, 1 column base, gap */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  /* @media (min-width: 640px) — 3 columns */
+  @media (min-width: 640px) {
+    .grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* .card — border, padding, radius, transition */
+  .card {
+    background-color: var(--card-bg);
+    border: 2px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 24px;
+    font-weight: 600;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    /* Transition placed on base class for smooth enter & exit */
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* .card:hover — lift effect */
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 20px -5px rgba(20, 184, 166, 0.3);
+  }
+
+  /* .card[data-icon]::before — content using attr() */
+  .card[data-icon]::before {
+    content: attr(data-icon) ' ';
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  /* dark mode @media */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --primary: #2dd4bf;
+      --accent: #14b8a6;
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f8fafc;
+    }
+
+    .card {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    }
+
+    .card:hover {
+      box-shadow: 0 12px 20px -5px rgba(45, 212, 191, 0.25);
+    }
+  }
+</style>
+</head>
+<body>
+  <h1>My Skills</h1>
+  <div class="grid">
+    <div class="card" data-icon="🌐">HTML5 — Structure</div>
+    <div class="card" data-icon="🎨">CSS3 — Styling</div>
+    <div class="card" data-icon="⚡">JavaScript — Behaviour</div>
+    <div class="card" data-icon="📐">Flexbox — 1D Layout</div>
+    <div class="card" data-icon="🗂">Grid — 2D Layout</div>
+    <div class="card" data-icon="📱">Responsive — Any Screen</div>
+  </div>
+</body>
+</html>
