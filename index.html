@@ -4,20 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="A collection of web development coursework: HTML, CSS, and JavaScript exercises from Weeks 2 through 4.">
-  <meta name="theme-color" content="#f4f3ed">
+  <meta name="theme-color" content="#f5f5f7">
   <title>Web Workshop | Coursework Archive</title>
   <style>
     :root {
       color-scheme: light;
-      --paper: #eef1eb;
-      --ink: #202923;
-      --muted: #647168;
-      --line: #d8ddd4;
-      --green: #235d49;
-      --green-dark: #193f34;
-      --coral: #c65b43;
-      --white: #fffefa;
-      --focus: #b84932;
+      --paper: #f5f5f7;
+      --ink: #1d1d1f;
+      --muted: #6e6e73;
+      --line: #d2d2d7;
+      --accent: #0071e3;
+      --accent-hover: #006edb;
+      --white: #ffffff;
+      --focus: #007aff;
     }
 
     *, *::before, *::after { box-sizing: border-box; }
@@ -26,9 +25,12 @@
 
     body {
       margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
       background: var(--paper);
       color: var(--ink);
-      font-family: "Aptos", "Segoe UI", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Segoe UI", sans-serif;
       font-size: 1rem;
       line-height: 1.55;
     }
@@ -40,7 +42,8 @@
       outline-offset: 3px;
     }
 
-    main, .footer-inner {
+    main {
+      flex: 1;
       width: min(100% - 40px, 1120px);
       margin-inline: auto;
     }
@@ -49,9 +52,8 @@
 
     h1 {
       margin-bottom: 8px;
-      font-family: Georgia, "Times New Roman", serif;
       font-size: 2.8rem;
-      font-weight: 500;
+      font-weight: 700;
       line-height: 1.1;
     }
 
@@ -78,34 +80,34 @@
       align-items: flex-start;
       min-height: 190px;
       padding: 22px;
-      border: 1px solid var(--line);
-      border-top: 4px solid var(--green);
-      border-radius: 4px;
+      border: 1px solid #e5e5ea;
+      border-radius: 14px;
       background: var(--white);
       color: var(--ink);
       cursor: pointer;
       text-align: left;
-      transition: border-color 0.18s ease, transform 0.18s ease;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
     }
 
     .week-option:hover {
-      transform: translateY(-3px);
-      border-color: var(--green);
+      transform: translateY(-2px);
+      border-color: #b8d7f8;
+      box-shadow: 0 8px 20px rgb(0 0 0 / 8%);
     }
 
     .week-option-number {
-      color: var(--coral);
+      color: var(--muted);
       font-size: 0.76rem;
-      font-weight: 800;
-      letter-spacing: 0.1em;
+      font-weight: 650;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
     }
 
     .week-option strong {
       margin-top: 16px;
-      font-family: Georgia, "Times New Roman", serif;
       font-size: 1.65rem;
-      font-weight: 500;
+      font-weight: 650;
     }
 
     .week-option-description {
@@ -117,7 +119,7 @@
     .week-option-count {
       margin-top: auto;
       padding-top: 18px;
-      color: var(--green);
+      color: var(--accent);
       font-size: 0.8rem;
       font-weight: 700;
     }
@@ -138,7 +140,7 @@
       padding: 8px 0;
       border: 0;
       background: transparent;
-      color: var(--green);
+      color: var(--accent);
       cursor: pointer;
       font: inherit;
       font-size: 0.9rem;
@@ -151,7 +153,10 @@
       display: flex;
       align-items: center;
       width: min(100%, 310px);
-      border-bottom: 1px solid #8a968c;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--white);
     }
 
     .search label {
@@ -174,14 +179,17 @@
 
     .search input:focus { outline: 0; }
 
-    .search:focus-within { border-color: var(--focus); }
+    .search:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgb(0 113 227 / 14%);
+    }
 
     .clear-button {
       flex: 0 0 auto;
       padding: 7px 0 7px 10px;
       border: 0;
       background: transparent;
-      color: var(--green);
+      color: var(--accent);
       cursor: pointer;
       font: inherit;
       font-size: 0.82rem;
@@ -209,18 +217,17 @@
     .week-number {
       display: block;
       margin-bottom: 8px;
-      color: var(--coral);
+      color: var(--accent);
       font-size: 0.78rem;
-      font-weight: 800;
-      letter-spacing: 0.11em;
+      font-weight: 700;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
     }
 
     .week-heading h2 {
       margin-bottom: 6px;
-      font-family: Georgia, "Times New Roman", serif;
       font-size: 1.8rem;
-      font-weight: 500;
+      font-weight: 650;
       line-height: 1.15;
     }
 
@@ -237,7 +244,7 @@
       color: var(--muted);
       font-size: 0.75rem;
       font-weight: 800;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
     }
 
@@ -263,7 +270,7 @@
       text-decoration: none;
     }
 
-    .exercise-list a:hover .exercise-title { color: var(--green); text-decoration: underline; }
+    .exercise-list a:hover .exercise-title { color: var(--accent-hover); text-decoration: underline; }
 
     .exercise-title { font-weight: 650; }
 
@@ -279,25 +286,20 @@
       color: var(--muted);
     }
 
-    footer {
-      background: #e3e9e2;
-      color: #4d5a51;
-      font-size: 0.84rem;
+    .site-footer {
+      padding: 18px 20px;
+      border-top: 1px solid #e5e5ea;
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-align: center;
     }
 
-    .footer-inner {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 20px 0;
-    }
-
-    .footer-inner p { margin: 0; }
+    .site-footer p { margin: 0; }
 
     [hidden] { display: none !important; }
 
     @media (max-width: 680px) {
-      main, .footer-inner { width: min(100% - 32px, 1120px); }
+      main { width: min(100% - 32px, 1120px); }
       h1 { font-size: 2.4rem; }
       .week-picker { padding-top: 24px; }
       .week-options { grid-template-columns: 1fr; gap: 10px; }
@@ -306,7 +308,6 @@
       .search { width: 100%; }
       .week-section { grid-template-columns: 1fr; gap: 18px; padding: 28px 0; }
       .exercise-list { grid-template-columns: 1fr; }
-      .footer-inner { flex-direction: column; gap: 4px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -435,10 +436,10 @@
         <div class="group">
           <h3>Class exercises</h3>
           <ul class="exercise-list">
-            <li><a href="class_ex/week_4_/week_4/ex1.js" data-search="week 4 exercise 1 javascript click counter button"><span class="exercise-title">Exercise 1 · Click counter</span><span class="exercise-meta">JavaScript</span></a></li>
-            <li><a href="class_ex/week_4_/week_4/ex2.js" data-search="week 4 exercise 2 javascript starter empty"><span class="exercise-title">Exercise 2 · Starter file</span><span class="exercise-meta">Empty file</span></a></li>
-            <li><a href="class_ex/week_4_/week_4/ex3.js" data-search="week 4 exercise 3 javascript starter empty"><span class="exercise-title">Exercise 3 · Starter file</span><span class="exercise-meta">Empty file</span></a></li>
-            <li><a href="class_ex/week_4_/week_4/ex4.js" data-search="week 4 exercise 4 javascript student search filter list"><span class="exercise-title">Exercise 4 · Student search</span><span class="exercise-meta">JavaScript</span></a></li>
+            <li><a href="class_ex/week_4_/week_4/ex1.html" data-search="week 4 exercise 1 javascript html click counter button"><span class="exercise-title">Exercise 1 · Click counter</span><span class="exercise-meta">Demo</span></a></li>
+            <li><a href="class_ex/week_4_/week_4/ex2.html" data-search="week 4 exercise 2 javascript html starter empty"><span class="exercise-title">Exercise 2 · Starter page</span><span class="exercise-meta">Starter</span></a></li>
+            <li><a href="class_ex/week_4_/week_4/ex3.html" data-search="week 4 exercise 3 javascript html starter empty"><span class="exercise-title">Exercise 3 · Starter page</span><span class="exercise-meta">Starter</span></a></li>
+            <li><a href="class_ex/week_4_/week_4/ex4.html" data-search="week 4 exercise 4 javascript html student search filter list"><span class="exercise-title">Exercise 4 · Student search</span><span class="exercise-meta">Demo</span></a></li>
             <li><a href="class_ex/week_4_/ex2.js" data-search="week 4 dark mode toggle theme javascript class exercise"><span class="exercise-title">Dark mode toggle</span><span class="exercise-meta">JavaScript</span></a></li>
             <li><a href="class_ex/week_4_/ex3.js" data-search="week 4 todo list add delete javascript class exercise"><span class="exercise-title">To-do list</span><span class="exercise-meta">JavaScript</span></a></li>
           </ul>
@@ -450,11 +451,8 @@
     </section>
   </main>
 
-  <footer>
-    <div class="footer-inner">
-      <p>Web Workshop · Coursework Archive</p>
-      <p>Built with HTML, CSS, and JavaScript</p>
-    </div>
+  <footer class="site-footer">
+    <p>Web Workshop</p>
   </footer>
 
   <script>

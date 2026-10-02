@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Week 4 JavaScript student search exercise.">
+  <title>Week 4 Exercise 4 | Student Search</title>
+  <link rel="stylesheet" href="week4.css">
+  <script src="ex4.js" defer></script>
+</head>
+<body>
+  <main>
+    <a class="back-link" href="../../../index.html">Back to all weeks</a>
+    <section class="panel" aria-labelledby="page-title">
+      <p class="eyebrow">Week 4 · JavaScript</p>
+      <h1 id="page-title">Student search</h1>
+      <p class="lede">Search the sample directory by name.</p>
+      <label class="search-label" for="search">Search students</label>
+      <input class="student-search" id="search" type="search" placeholder="Type a name" autocomplete="off">
+      <ul class="student-list" aria-label="Students">
+        <li class="student" data-name="Avery Chen">Avery Chen — Web Design</li>
+        <li class="student" data-name="Casey Rivera">Casey Rivera — Computer Science</li>
+        <li class="student" data-name="Emerson Patel">Emerson Patel — Digital Media</li>
+        <li class="student" data-name="Jamie Morgan">Jamie Morgan — Information Systems</li>
+        <li class="student" data-name="Jordan Kim">Jordan Kim — Computer Science</li>
+        <li class="student" data-name="Morgan Lee">Morgan Lee — Web Design</li>
+        <li class="student" data-name="Quinn Taylor">Quinn Taylor — Digital Media</li>
+        <li class="student" data-name="Riley Brooks">Riley Brooks — Information Systems</li>
+      </ul>
+      <p id="no-results" aria-live="polite">No students match that search.</p>
+    </section>
+  </main>
+</body>
+</html>
