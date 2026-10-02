@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A collection of web development coursework: HTML, CSS, and JavaScript exercises from Weeks 2 through 4.">
+  <meta name="theme-color" content="#f4f3ed">
+  <title>Web Workshop | Coursework Archive</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #eef1eb;
+      --ink: #202923;
+      --muted: #647168;
+      --line: #d8ddd4;
+      --green: #235d49;
+      --green-dark: #193f34;
+      --coral: #c65b43;
+      --white: #fffefa;
+      --focus: #b84932;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Aptos", "Segoe UI", sans-serif;
+      font-size: 1rem;
+      line-height: 1.55;
+    }
+
+    a { color: inherit; }
+
+    a:focus-visible, button:focus-visible, input:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    main, .footer-inner {
+      width: min(100% - 40px, 1120px);
+      margin-inline: auto;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      margin-bottom: 8px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 2.8rem;
+      font-weight: 500;
+      line-height: 1.1;
+    }
+
+    main { padding: 24px 0 72px; }
+
+    .week-picker { padding: 34px 0 50px; }
+
+    .chooser-heading {
+      max-width: 650px;
+      margin-bottom: 30px;
+    }
+
+    .chooser-heading p { margin-bottom: 0; color: var(--muted); }
+
+    .week-options {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .week-option {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-height: 190px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--green);
+      border-radius: 4px;
+      background: var(--white);
+      color: var(--ink);
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.18s ease, transform 0.18s ease;
+    }
+
+    .week-option:hover {
+      transform: translateY(-3px);
+      border-color: var(--green);
+    }
+
+    .week-option-number {
+      color: var(--coral);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .week-option strong {
+      margin-top: 16px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.65rem;
+      font-weight: 500;
+    }
+
+    .week-option-description {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .week-option-count {
+      margin-top: auto;
+      padding-top: 18px;
+      color: var(--green);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .task-view { padding-top: 12px; }
+
+    .task-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 0 0 22px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .back-button {
+      flex: 0 0 auto;
+      padding: 8px 0;
+      border: 0;
+      background: transparent;
+      color: var(--green);
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .back-button:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+    .search {
+      display: flex;
+      align-items: center;
+      width: min(100%, 310px);
+      border-bottom: 1px solid #8a968c;
+    }
+
+    .search label {
+      flex: 0 0 auto;
+      margin-right: 10px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .search input {
+      width: 100%;
+      min-width: 0;
+      padding: 10px 0;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+    }
+
+    .search input:focus { outline: 0; }
+
+    .search:focus-within { border-color: var(--focus); }
+
+    .clear-button {
+      flex: 0 0 auto;
+      padding: 7px 0 7px 10px;
+      border: 0;
+      background: transparent;
+      color: var(--green);
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .results {
+      min-height: 24px;
+      margin: 12px 0 6px;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .week-section {
+      display: grid;
+      grid-template-columns: minmax(155px, 0.72fr) minmax(0, 2fr);
+      gap: 32px;
+      padding: 34px 0 38px;
+      border-bottom: 1px solid var(--line);
+      scroll-margin-top: 20px;
+    }
+
+    .week-heading { align-self: start; }
+
+    .week-number {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--coral);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+    }
+
+    .week-heading h2 {
+      margin-bottom: 6px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.8rem;
+      font-weight: 500;
+      line-height: 1.15;
+    }
+
+    .week-heading p {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .group + .group { margin-top: 27px; }
+
+    .group h3 {
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .exercise-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0 28px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .exercise-list li { min-width: 0; border-top: 1px solid var(--line); }
+
+    .exercise-list a {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 48px;
+      padding: 12px 0;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .exercise-list a:hover .exercise-title { color: var(--green); text-decoration: underline; }
+
+    .exercise-title { font-weight: 650; }
+
+    .exercise-meta {
+      flex: 0 0 auto;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
+    .empty-state {
+      display: none;
+      padding: 34px 0;
+      color: var(--muted);
+    }
+
+    footer {
+      background: #e3e9e2;
+      color: #4d5a51;
+      font-size: 0.84rem;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 20px 0;
+    }
+
+    .footer-inner p { margin: 0; }
+
+    [hidden] { display: none !important; }
+
+    @media (max-width: 680px) {
+      main, .footer-inner { width: min(100% - 32px, 1120px); }
+      h1 { font-size: 2.4rem; }
+      .week-picker { padding-top: 24px; }
+      .week-options { grid-template-columns: 1fr; gap: 10px; }
+      .week-option { min-height: 158px; }
+      .task-toolbar { align-items: stretch; flex-direction: column; gap: 8px; }
+      .search { width: 100%; }
+      .week-section { grid-template-columns: 1fr; gap: 18px; padding: 28px 0; }
+      .exercise-list { grid-template-columns: 1fr; }
+      .footer-inner { flex-direction: column; gap: 4px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="week-picker" id="week-picker" aria-labelledby="chooser-title">
+      <div class="chooser-heading">
+        <h1 id="chooser-title">Choose a week</h1>
+        <p>Select a week to browse its coursework and open an exercise.</p>
+      </div>
+      <div class="week-options">
+        <button class="week-option" type="button" data-week="week-2">
+          <span class="week-option-number">01 / Foundations</span>
+          <strong>Week 2</strong>
+          <span class="week-option-description">HTML structure and semantic content</span>
+          <span class="week-option-count">16 tasks</span>
+        </button>
+        <button class="week-option" type="button" data-week="week-3">
+          <span class="week-option-number">02 / Styling</span>
+          <strong>Week 3</strong>
+          <span class="week-option-description">CSS rules, layout, and responsive design</span>
+          <span class="week-option-count">15 tasks</span>
+        </button>
+        <button class="week-option" type="button" data-week="week-4">
+          <span class="week-option-number">03 / Interactivity</span>
+          <strong>Week 4</strong>
+          <span class="week-option-description">JavaScript interactions and DOM practice</span>
+          <span class="week-option-count">6 tasks</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="task-view" id="task-view" hidden>
+      <div class="task-toolbar">
+        <button class="back-button" id="back-to-weeks" type="button">Back to weeks</button>
+        <div class="search">
+          <label for="exercise-search">Find</label>
+          <input id="exercise-search" type="search" placeholder="Topic or exercise" autocomplete="off">
+          <button class="clear-button" id="clear-search" type="button" aria-label="Clear search">Clear</button>
+        </div>
+      </div>
+      <p class="results" id="results" aria-live="polite">Showing all exercises</p>
+
+    <section class="week-section" id="week-2" aria-labelledby="week-2-title" hidden>
+      <div class="week-heading">
+        <span class="week-number">01 / Foundations</span>
+        <h2 id="week-2-title">Week 2</h2>
+        <p>HTML structure and semantic content</p>
+      </div>
+      <div>
+        <div class="group">
+          <h3>HTML essentials</h3>
+          <ul class="exercise-list">
+            <li><a href="week2/week2_1/html.sekeletion.html" data-search="week 2 html skeleton document structure"><span class="exercise-title">HTML document skeleton</span><span class="exercise-meta">Lesson</span></a></li>
+            <li><a href="week2/week2_1/html_basics_metadata.html" data-search="week 2 html basics metadata page title charset"><span class="exercise-title">Basics and metadata</span><span class="exercise-meta">Lesson</span></a></li>
+            <li><a href="week2/week2_1/heading_and_emphasis.html" data-search="week 2 headings emphasis text formatting strong"><span class="exercise-title">Headings and emphasis</span><span class="exercise-meta">Lesson</span></a></li>
+            <li><a href="week2/week2_1/nestedlists.html" data-search="week 2 nested ordered unordered lists roadmap"><span class="exercise-title">Nested lists</span><span class="exercise-meta">Lesson</span></a></li>
+            <li><a href="week2/week2_1/navigationlist.html" data-search="week 2 navigation links list"><span class="exercise-title">Navigation list</span><span class="exercise-meta">Lesson</span></a></li>
+            <li><a href="week2/week2_1/img_gallarey.html" data-search="week 2 image gallery images"><span class="exercise-title">Image gallery</span><span class="exercise-meta">Lesson</span></a></li>
+            <li><a href="week2/week2_1/page.html" data-search="week 2 personal portfolio page profile skills"><span class="exercise-title">Personal profile page</span><span class="exercise-meta">Project</span></a></li>
+            <li><a href="week2/week2_1/week2.html" data-search="week 2 portfolio complete html study guide"><span class="exercise-title">Week 2 portfolio</span><span class="exercise-meta">Project</span></a></li>
+          </ul>
+        </div>
+        <div class="group">
+          <h3>Semantic HTML exercises</h3>
+          <ul class="exercise-list">
+            <li><a href="week2/week2_2/ex1.html" data-search="week 2 exercise 1 semantic blog article"><span class="exercise-title">Exercise 1 · Blog structure</span><span class="exercise-meta">HTML</span></a></li>
+            <li><a href="week2/week2_2/ex2.html" data-search="week 2 exercise 2 semantic blog header navigation"><span class="exercise-title">Exercise 2 · Blog navigation</span><span class="exercise-meta">HTML</span></a></li>
+            <li><a href="week2/week2_2/ex3.html" data-search="week 2 exercise 3 semantic page structure"><span class="exercise-title">Exercise 3 · Page landmarks</span><span class="exercise-meta">HTML</span></a></li>
+            <li><a href="week2/week2_2/ex4.html" data-search="week 2 exercise 4 faq details summary"><span class="exercise-title">Exercise 4 · FAQ</span><span class="exercise-meta">HTML</span></a></li>
+            <li><a href="week2/week2_2/ex5.html" data-search="week 2 exercise 5 semantic portfolio"><span class="exercise-title">Exercise 5 · Portfolio</span><span class="exercise-meta">HTML</span></a></li>
+            <li><a href="week2/week2_2/ex6.html" data-search="week 2 exercise 6 fix semantic html"><span class="exercise-title">Exercise 6 · Semantic fixes</span><span class="exercise-meta">HTML</span></a></li>
+            <li><a href="week2/week2_2/ex7.html" data-search="week 2 exercise 7 quotes blockquote citation"><span class="exercise-title">Exercise 7 · Quotes and citations</span><span class="exercise-meta">HTML</span></a></li>
+            <li><a href="week2/week2_2/ex8.html" data-search="week 2 exercise 8 news article semantic html"><span class="exercise-title">Exercise 8 · News article</span><span class="exercise-meta">HTML</span></a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="week-section" id="week-3" aria-labelledby="week-3-title" hidden>
+      <div class="week-heading">
+        <span class="week-number">02 / Styling</span>
+        <h2 id="week-3-title">Week 3</h2>
+        <p>CSS rules, layout, and responsive design</p>
+      </div>
+      <div>
+        <div class="group">
+          <h3>CSS foundations</h3>
+          <ul class="exercise-list">
+            <li><a href="week3/week3_1/ex1.html" data-search="week 3 css exercise 1 styles text color"><span class="exercise-title">Exercise 1 · CSS rules</span><span class="exercise-meta">CSS</span></a></li>
+            <li><a href="week3/week3_1/ex2.html" data-search="week 3 css exercise 2 inline internal styles"><span class="exercise-title">Exercise 2 · Applying styles</span><span class="exercise-meta">CSS</span></a></li>
+            <li><a href="week3/week3_1/ex3.html" data-search="week 3 css exercise 3 color palette swatches"><span class="exercise-title">Exercise 3 · Color palette</span><span class="exercise-meta">CSS</span></a></li>
+            <li><a href="week3/week3_1/ex4.html" data-search="week 3 css exercise 4 box model margin border padding"><span class="exercise-title">Exercise 4 · Box model</span><span class="exercise-meta">CSS</span></a></li>
+            <li><a href="week3/week3_1/ex5.html" data-search="week 3 css exercise 5 debug fix syntax"><span class="exercise-title">Exercise 5 · Fix the CSS</span><span class="exercise-meta">CSS</span></a></li>
+            <li><a href="week3/week3_1/ex6.html" data-search="week 3 css exercise 6 flex navigation bar"><span class="exercise-title">Exercise 6 · Flex navigation</span><span class="exercise-meta">CSS</span></a></li>
+            <li><a href="week3/week3_1/ex7.html" data-search="week 3 css exercise 7 profile card"><span class="exercise-title">Exercise 7 · Profile card</span><span class="exercise-meta">CSS</span></a></li>
+            <li><a href="week3/week3_1/ex8.html" data-search="week 3 css exercise 8 portfolio responsive layout"><span class="exercise-title">Exercise 8 · CSS portfolio</span><span class="exercise-meta">CSS</span></a></li>
+          </ul>
+        </div>
+        <div class="group">
+          <h3>Layout and interaction</h3>
+          <ul class="exercise-list">
+            <li><a href="week3/week3_2/ex1.html" data-search="week 3 exercise 1 positioning badge card"><span class="exercise-title">Exercise 1 · Positioned badge</span><span class="exercise-meta">CSS</span></a></li>
+            <li><a href="week3/week3_2/ex2.html" data-search="week 3 exercise 2 card hover transition"><span class="exercise-title">Exercise 2 · Hover transition</span><span class="exercise-meta">CSS</span></a></li>
+            <li><a href="week3/week3_2/ex3.html" data-search="week 3 exercise 3 animation spinner keyframes"><span class="exercise-title">Exercise 3 · Spinner animation</span><span class="exercise-meta">CSS</span></a></li>
+            <li><a href="week3/week3_2/ex4.html" data-search="week 3 exercise 4 css variables theme dark mode"><span class="exercise-title">Exercise 4 · Theme variables</span><span class="exercise-meta">CSS</span></a></li>
+            <li><a href="week3/week3_2/ex5.html" data-search="week 3 exercise 5 fixed navigation scroll"><span class="exercise-title">Exercise 5 · Fixed navigation</span><span class="exercise-meta">CSS</span></a></li>
+            <li><a href="week3/week3_2/ex6.html" data-search="week 3 exercise 6 responsive grid cards"><span class="exercise-title">Exercise 6 · Responsive grid</span><span class="exercise-meta">CSS</span></a></li>
+            <li><a href="week3/week3_2/ex7.html" data-search="week 3 exercise 7 portfolio sticky responsive animation"><span class="exercise-title">Exercise 7 · Portfolio layout</span><span class="exercise-meta">CSS</span></a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="week-section" id="week-4" aria-labelledby="week-4-title" hidden>
+      <div class="week-heading">
+        <span class="week-number">03 / Interactivity</span>
+        <h2 id="week-4-title">Week 4</h2>
+        <p>JavaScript interactions and DOM practice</p>
+      </div>
+      <div>
+        <div class="group">
+          <h3>Class exercises</h3>
+          <ul class="exercise-list">
+            <li><a href="class_ex/week_4_/week_4/ex1.js" data-search="week 4 exercise 1 javascript click counter button"><span class="exercise-title">Exercise 1 · Click counter</span><span class="exercise-meta">JavaScript</span></a></li>
+            <li><a href="class_ex/week_4_/week_4/ex2.js" data-search="week 4 exercise 2 javascript starter empty"><span class="exercise-title">Exercise 2 · Starter file</span><span class="exercise-meta">Empty file</span></a></li>
+            <li><a href="class_ex/week_4_/week_4/ex3.js" data-search="week 4 exercise 3 javascript starter empty"><span class="exercise-title">Exercise 3 · Starter file</span><span class="exercise-meta">Empty file</span></a></li>
+            <li><a href="class_ex/week_4_/week_4/ex4.js" data-search="week 4 exercise 4 javascript student search filter list"><span class="exercise-title">Exercise 4 · Student search</span><span class="exercise-meta">JavaScript</span></a></li>
+            <li><a href="class_ex/week_4_/ex2.js" data-search="week 4 dark mode toggle theme javascript class exercise"><span class="exercise-title">Dark mode toggle</span><span class="exercise-meta">JavaScript</span></a></li>
+            <li><a href="class_ex/week_4_/ex3.js" data-search="week 4 todo list add delete javascript class exercise"><span class="exercise-title">To-do list</span><span class="exercise-meta">JavaScript</span></a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+      <p class="empty-state" id="empty-state">No exercises match that search. Try a different topic.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <p>Web Workshop · Coursework Archive</p>
+      <p>Built with HTML, CSS, and JavaScript</p>
+    </div>
+  </footer>
+
+  <script>
+    const searchInput = document.querySelector('#exercise-search');
+    const clearButton = document.querySelector('#clear-search');
+    const backButton = document.querySelector('#back-to-weeks');
+    const weekPicker = document.querySelector('#week-picker');
+    const taskView = document.querySelector('#task-view');
+    const weekOptions = [...document.querySelectorAll('.week-option')];
+    const exerciseLinks = [...document.querySelectorAll('.exercise-list a')];
+    const weekSections = [...document.querySelectorAll('.week-section')];
+    const results = document.querySelector('#results');
+    const emptyState = document.querySelector('#empty-state');
+    let activeWeek = null;
+
+    function filterExercises() {
+      const query = searchInput.value.trim().toLowerCase();
+      let visibleCount = 0;
+      const activeSection = document.querySelector(`#${activeWeek}`);
+      const activeLinks = activeSection.querySelectorAll('.exercise-list a');
+
+      exerciseLinks.forEach((link) => {
+        if (!activeSection.contains(link)) {
+          link.closest('li').hidden = false;
+          return;
+        }
+        const searchableText = `${link.textContent} ${link.dataset.search}`.toLowerCase();
+        const matches = searchableText.includes(query);
+        link.closest('li').hidden = !matches;
+        if (matches) visibleCount++;
+      });
+
+      const groups = [...activeSection.querySelectorAll('.group')];
+      groups.forEach((group) => {
+        group.hidden = !group.querySelector('.exercise-list li:not([hidden])');
+      });
+
+      results.textContent = query
+        ? `Showing ${visibleCount} of ${activeLinks.length} tasks`
+        : `Showing all ${activeLinks.length} tasks`;
+      emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+    }
+
+    weekOptions.forEach((option) => {
+      option.addEventListener('click', () => {
+        activeWeek = option.dataset.week;
+        weekPicker.hidden = true;
+        taskView.hidden = false;
+        weekSections.forEach((section) => {
+          section.hidden = section.id !== activeWeek;
+        });
+        searchInput.value = '';
+        filterExercises();
+        backButton.focus();
+      });
+    });
+
+    backButton.addEventListener('click', () => {
+      activeWeek = null;
+      searchInput.value = '';
+      taskView.hidden = true;
+      weekPicker.hidden = false;
+      weekSections.forEach((section) => {
+        section.hidden = true;
+      });
+      weekOptions[0].focus();
+    });
+
+    searchInput.addEventListener('input', filterExercises);
+    clearButton.addEventListener('click', () => {
+      searchInput.value = '';
+      filterExercises();
+      searchInput.focus();
+    });
+  </script>
+</body>
+</html>
