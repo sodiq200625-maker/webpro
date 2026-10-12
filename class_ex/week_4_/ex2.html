@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Week 4 dark mode toggle exercise.">
+  <title>Week 4 | Dark Mode Toggle</title>
+  <link rel="stylesheet" href="week_4/week4.css">
+  <style>
+    .panel.dark { border-color: #45454a; background: #1d1d1f; color: #f5f5f7; }
+    .panel.dark .lede { color: #a1a1a6; }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back-link" href="../../index.html">Back to all weeks</a>
+    <section class="panel" id="card" aria-labelledby="page-title">
+      <p class="eyebrow">Week 4 · JavaScript</p>
+      <h1 id="page-title">Dark mode toggle</h1>
+      <p class="lede">Switch the panel between light and dark.</p>
+      <button class="primary-button" id="toggle-btn" type="button">Dark Mode</button>
+    </section>
+  </main>
+  <script>
+    const card = document.querySelector('#card');
+    const toggleBtn = document.querySelector('#toggle-btn');
+
+    toggleBtn.addEventListener('click', () => {
+      card.classList.toggle('dark');
+      toggleBtn.textContent = card.classList.contains('dark') ? 'Light Mode' : 'Dark Mode';
+    });
+  </script>
+</body>
+</html>

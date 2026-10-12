@@ -6,7 +6,6 @@
   <meta name="description" content="Week 4 JavaScript student search exercise.">
   <title>Week 4 Exercise 4 | Student Search</title>
   <link rel="stylesheet" href="week4.css">
-  <script src="ex4.js" defer></script>
 </head>
 <body>
   <main>
@@ -30,5 +29,41 @@
       <p id="no-results" aria-live="polite">No students match that search.</p>
     </section>
   </main>
+  <script>
+    const searchInput = document.querySelector('#search');
+    const students = document.querySelectorAll('.student');
+    const noResults = document.querySelector('#no-results');
+
+    searchInput.addEventListener('input', (event) => {
+      const term = event.target.value.toLowerCase();
+      let visibleCount = 0;
+
+      students.forEach((student) => {
+        const name = student.getAttribute('data-name');
+        const lowerName = name.toLowerCase();
+
+        if (lowerName.includes(term)) {
+          student.style.display = '';
+          visibleCount++;
+
+          if (term !== '') {
+            const highlighted = name.replace(
+              new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'),
+              (match) => `<mark>${match}</mark>`
+            );
+            const course = student.textContent.split(' — ')[1];
+            student.innerHTML = `${highlighted} — ${course}`;
+          } else {
+            const course = student.textContent.split(' — ')[1];
+            student.textContent = `${name} — ${course}`;
+          }
+        } else {
+          student.style.display = 'none';
+        }
+      });
+
+      noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+    });
+  </script>
 </body>
 </html>

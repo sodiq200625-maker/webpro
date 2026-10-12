@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Week 4 to-do list exercise.">
+  <title>Week 4 | To-do List</title>
+  <link rel="stylesheet" href="week_4/week4.css">
+  <style>
+    .todo-form { display: flex; gap: 10px; }
+    .todo-input { flex: 1; min-width: 0; min-height: 44px; padding: 0 13px; border: 1px solid #d2d2d7; border-radius: 10px; font: inherit; }
+    .todo-list { display: grid; gap: 8px; margin: 18px 0 0; padding: 0; list-style: none; }
+    .todo-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid #e5e5ea; overflow-wrap: anywhere; }
+    .delete-button { flex: none; padding: 6px 10px; border: 1px solid #d2d2d7; border-radius: 8px; background: #fff; color: #1d1d1f; cursor: pointer; font: inherit; }
+    .empty-message { color: #6e6e73; }
+    @media (max-width: 420px) { .todo-form { flex-direction: column; } }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back-link" href="../../index.html">Back to all weeks</a>
+    <section class="panel" aria-labelledby="page-title">
+      <p class="eyebrow">Week 4 · JavaScript</p>
+      <h1 id="page-title">To-do list</h1>
+      <p class="lede">Add tasks and remove them when they are done.</p>
+      <div class="todo-form">
+        <input class="todo-input" id="todo-input" type="text" aria-label="New task" placeholder="Write a task">
+        <button class="primary-button" id="add-btn" type="button">Add task</button>
+      </div>
+      <p class="empty-message" id="empty-msg">No tasks yet.</p>
+      <ul class="todo-list" id="todo-list"></ul>
+    </section>
+  </main>
+  <script>
+    const input = document.querySelector('#todo-input');
+    const addBtn = document.querySelector('#add-btn');
+    const todoList = document.querySelector('#todo-list');
+    const emptyMsg = document.querySelector('#empty-msg');
+
+    function updateEmptyMsg() {
+      emptyMsg.style.display = todoList.children.length === 0 ? 'block' : 'none';
+    }
+
+    function addTask() {
+      const text = input.value.trim();
+      if (text === '') return;
+
+      const item = document.createElement('li');
+      const taskText = document.createElement('span');
+      const deleteButton = document.createElement('button');
+      item.className = 'todo-item';
+      taskText.textContent = text;
+      deleteButton.className = 'delete-button';
+      deleteButton.type = 'button';
+      deleteButton.textContent = 'Delete';
+      item.append(taskText, deleteButton);
+      todoList.appendChild(item);
+      input.value = '';
+      updateEmptyMsg();
+      input.focus();
+    }
+
+    addBtn.addEventListener('click', addTask);
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') addTask();
+    });
+    todoList.addEventListener('click', (event) => {
+      if (event.target.matches('.delete-button')) {
+        event.target.closest('.todo-item').remove();
+        updateEmptyMsg();
+      }
+    });
+    updateEmptyMsg();
+  </script>
+</body>
+</html>

@@ -6,7 +6,6 @@
   <meta name="description" content="Week 4 JavaScript click counter exercise.">
   <title>Week 4 Exercise 1 | Click Counter</title>
   <link rel="stylesheet" href="week4.css">
-  <script src="ex1.js" defer></script>
 </head>
 <body>
   <main>
@@ -23,5 +22,21 @@
       <p class="message" id="message" aria-live="polite"></p>
     </section>
   </main>
+  <script>
+    const button = document.querySelector('#clicker');
+    const countDisplay = document.querySelector('#count');
+    const messageDisplay = document.querySelector('#message');
+    let count = 0;
+
+    button.addEventListener('click', () => {
+      count++;
+      countDisplay.textContent = count;
+
+      if (count >= 5) {
+        button.classList.add('done');
+        messageDisplay.textContent = 'Congratulations! You reached 5 clicks!';
+      }
+    });
+  </script>
 </body>
 </html>
