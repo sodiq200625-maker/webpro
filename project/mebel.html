@@ -1,0 +1,2306 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MEBEL • Sanctuaries of Calm & Craftsmanship</title>
+  <meta name="description" content="Discover cozy, minimalist Scandinavian and Japandi furniture crafted for warm, calm home sanctuaries. Premium sofas, lounge chairs, dining tables, beds & decor.">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: {
+              DEFAULT: 'rgb(var(--c-cream) / <alpha-value>)',
+            },
+            sand: {
+              DEFAULT: 'rgb(var(--c-sand) / <alpha-value>)',
+            },
+            taupe: {
+              DEFAULT: 'rgb(var(--c-taupe) / <alpha-value>)',
+              muted: 'rgb(var(--c-taupe-muted) / <alpha-value>)',
+            },
+            terracotta: {
+              DEFAULT: '#C86D51',
+              hover: '#B55C41',
+              soft: 'rgba(200, 109, 81, 0.12)'
+            },
+            olive: {
+              DEFAULT: '#707A5E',
+              hover: '#5D664D',
+              soft: 'rgba(112, 122, 94, 0.12)'
+            },
+            charcoal: {
+              DEFAULT: 'rgb(var(--c-charcoal) / <alpha-value>)',
+              muted: 'rgb(var(--c-charcoal-muted) / <alpha-value>)',
+              light: 'rgb(var(--c-charcoal-light) / <alpha-value>)'
+            }
+          },
+          fontFamily: {
+            serif: ['Cormorant Garamond', 'Playfair Display', 'Georgia', 'serif'],
+            sans: ['Plus Jakarta Sans', 'Inter', '-apple-system', 'sans-serif'],
+          },
+          boxShadow: {
+            'cozy': '0 10px 30px -10px rgba(43, 43, 43, 0.05), 0 4px 12px -2px rgba(43, 43, 43, 0.03)',
+            'cozy-hover': '0 20px 40px -12px rgba(43, 43, 43, 0.1), 0 8px 20px -4px rgba(43, 43, 43, 0.04)',
+            'drawer': '-10px 0 30px rgba(43, 43, 43, 0.08)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- React 18 & Babel CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* Smooth image transitions & subtle zoom */
+    .img-zoom-container {
+      overflow: hidden;
+    }
+    .img-zoom-container img {
+      transition: transform 0.7s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease;
+    }
+    .img-zoom-container:hover img {
+      transform: scale(1.05);
+    }
+    
+    /* Theme colours as variables so Evening mode can swap them */
+    :root {
+      --c-cream: 250 247 242;
+      --c-sand: 243 238 231;
+      --c-taupe: 230 223 213;
+      --c-taupe-muted: 207 197 184;
+      --c-charcoal: 43 43 43;
+      --c-charcoal-muted: 90 86 82;
+      --c-charcoal-light: 138 133 127;
+    }
+    html.evening {
+      --c-cream: 29 24 20;
+      --c-sand: 40 33 27;
+      --c-taupe: 66 55 45;
+      --c-taupe-muted: 96 82 68;
+      --c-charcoal: 243 234 221;
+      --c-charcoal-muted: 201 189 174;
+      --c-charcoal-light: 154 143 131;
+    }
+    html.evening img { filter: brightness(0.9) sepia(0.12); }
+    body { transition: background-color .5s ease, color .5s ease; }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: rgb(var(--c-cream)); }
+    ::-webkit-scrollbar-thumb { background: rgb(var(--c-taupe-muted)); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgb(var(--c-charcoal-light)); }
+
+    /* Hide scrollbar for category pills */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Gentle entrance animations */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    .animate-fadeIn { animation: fadeIn .5s ease both; }
+    .animate-slideUp { animation: slideUp .35s ease both; }
+
+    /* Keyboard focus ring */
+    button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 2px solid #C86D51; outline-offset: 2px;
+    }
+    input[type=range] { accent-color: #C86D51; }
+  </style>
+</head>
+<body class="bg-cream text-charcoal font-sans antialiased selection:bg-terracotta/20 selection:text-terracotta">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useMemo, useContext, createContext } = React;
+
+    // Shared money formatter (set up inside <App />, used by every price on the site)
+    const MoneyCtx = createContext({ fmt: (n) => '$' + Math.round(n).toLocaleString(), currency: 'USD' });
+    const useMoney = () => useContext(MoneyCtx);
+
+    // --- MOCK PRODUCT DATA (Premium Japandi / Scandinavian Collection) ---
+    const PRODUCTS = [
+      {
+        id: 'p1',
+        name: 'Komorebi Bouclé Lounge Sofa',
+        category: 'sofas',
+        categoryName: 'Sofas',
+        price: 2450,
+        rating: 4.9,
+        reviewsCount: 38,
+        inStock: true,
+        tag: 'Best Seller',
+        primaryImg: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1200&q=80',
+        hoverImg: 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=1200&q=80',
+        gallery: [
+          'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1200&q=80',
+          'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=1200&q=80'
+        ],
+        shortDesc: 'Deep, cloud-like seating wrapped in tactile organic Italian bouclé fabric with solid white oak base.',
+        fullDesc: 'Designed to cultivate stillness, the Komorebi Sofa pairs low-slung Scandinavian proportions with Japanese minimalism. Crafted with high-resilience memory foam, feather-down layering, and FSC-certified kiln-dried oak frame.',
+        materials: 'Heavyweight organic wool bouclé, Solid White Oak, Pocket Coil Core, Goose Feather Padding.',
+        dimensions: 'W: 230cm × D: 105cm × H: 72cm (Seat Height: 42cm)',
+        weight: '68 kg'
+      },
+      {
+        id: 'p2',
+        name: 'Asahi Soft-Curve Lounge Chair',
+        category: 'chairs',
+        categoryName: 'Lounge Chairs',
+        price: 1180,
+        rating: 5.0,
+        reviewsCount: 24,
+        inStock: true,
+        tag: 'New Design',
+        primaryImg: 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=1200&q=80',
+        hoverImg: 'https://images.unsplash.com/photo-1580481072645-022f9a6d8310?auto=format&fit=crop&w=1200&q=80',
+        gallery: [
+          'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=1200&q=80',
+          'https://images.unsplash.com/photo-1580481072645-022f9a6d8310?auto=format&fit=crop&w=1200&q=80'
+        ],
+        shortDesc: 'Enveloping cocoon armless lounge chair upholstered in warm oat linen blend.',
+        fullDesc: 'The Asahi Chair invites quiet moments of reading and meditation. Its gently sculpted silhouette offers ergonomic lumbar support while maintaining a sleek, unobtrusive profile in modern cozy living spaces.',
+        materials: '70% Belgian Linen / 30% Cotton, Steam-bent Walnut frame, High-density natural foam.',
+        dimensions: 'W: 84cm × D: 88cm × H: 76cm',
+        weight: '22 kg'
+      },
+      {
+        id: 'p3',
+        name: 'Norden Solid Oak Dining Table',
+        category: 'tables',
+        categoryName: 'Dining Tables',
+        price: 1890,
+        rating: 4.8,
+        reviewsCount: 19,
+        inStock: true,
+        tag: 'Handcrafted',
+        primaryImg: 'https://images.unsplash.com/photo-1530018607912-eff2daa1bac4?auto=format&fit=crop&w=1200&q=80',
+        hoverImg: 'https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?auto=format&fit=crop&w=1200&q=80',
+        gallery: [
+          'https://images.unsplash.com/photo-1530018607912-eff2daa1bac4?auto=format&fit=crop&w=1200&q=80',
+          'https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?auto=format&fit=crop&w=1200&q=80'
+        ],
+        shortDesc: 'Generous 8-seater dining table with soft pill-shaped corners and hand-brushed matte oil finish.',
+        fullDesc: 'Gather around authentic solid wood. Each Norden dining table highlights the unique grain patterns of sustainably harvested European White Oak, hand-finished with non-toxic natural matte wax.',
+        materials: 'Solid European White Oak, Natural Matte Hardwax-Oil.',
+        dimensions: 'L: 220cm × W: 95cm × H: 75cm (Tabletop thickness: 3.5cm)',
+        weight: '62 kg'
+      },
+      {
+        id: 'p4',
+        name: 'Zenith Minimal Platform Bed',
+        category: 'beds',
+        categoryName: 'Beds',
+        price: 2100,
+        rating: 4.9,
+        reviewsCount: 42,
+        inStock: true,
+        tag: 'Rest Essential',
+        primaryImg: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80',
+        hoverImg: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=1200&q=80',
+        gallery: [
+          'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80',
+          'https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=1200&q=80'
+        ],
+        shortDesc: 'Low-profile solid Ash bed frame with padded floating linen headboard.',
+        fullDesc: 'Transform your bedroom into a soothing sanctuary. The Zenith Bed features quiet joinery techniques eliminating squeaks, floating side rails, and integrated nightstand ledges.',
+        materials: 'Solid White Ash wood, Upholstered Sand Linen headboard cushion, Solid pine slat system.',
+        dimensions: 'Queen (L: 218cm × W: 168cm × H: 90cm frame height 22cm)',
+        weight: '74 kg'
+      },
+      {
+        id: 'p5',
+        name: 'Wabi Ceramic Pendant Lamp',
+        category: 'lighting',
+        categoryName: 'Lighting',
+        price: 360,
+        rating: 4.7,
+        reviewsCount: 15,
+        inStock: true,
+        tag: 'Artisan',
+        primaryImg: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=1200&q=80',
+        hoverImg: 'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=1200&q=80',
+        gallery: [
+          'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=1200&q=80',
+          'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=1200&q=80'
+        ],
+        shortDesc: 'Hand-thrown unglazed stoneware shade providing warm ambient downlight.',
+        fullDesc: 'Each Wabi pendant light is individually thrown on the potter\'s wheel in Kyoto. The exterior features subtle raw clay texture, while the interior is glazed in warm cream to diffuse soft golden illumination.',
+        materials: 'Stoneware Clay, Brass fittings, Braided fabric cord (2m length).',
+        dimensions: 'Diameter: 34cm × Height: 22cm',
+        weight: '3.2 kg'
+      },
+      {
+        id: 'p6',
+        name: 'Travertine Low Coffee Table',
+        category: 'tables',
+        categoryName: 'Tables',
+        price: 980,
+        rating: 4.9,
+        reviewsCount: 29,
+        inStock: true,
+        tag: 'Natural Stone',
+        primaryImg: 'https://images.unsplash.com/photo-1532323544230-7191fd51bc1b?auto=format&fit=crop&w=1200&q=80',
+        hoverImg: 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=1200&q=80',
+        gallery: [
+          'https://images.unsplash.com/photo-1532323544230-7191fd51bc1b?auto=format&fit=crop&w=1200&q=80',
+          'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=1200&q=80'
+        ],
+        shortDesc: 'Honed Roman travertine stone table with monolithic geometric base.',
+        fullDesc: 'Celebrated for its organic porous textures and warm beige tones. Cut from solid Italian travertine slabs, sealed with a stain-resistant matte finish.',
+        materials: '100% Solid Roman Travertine Stone.',
+        dimensions: 'L: 110cm × W: 70cm × H: 32cm',
+        weight: '48 kg'
+      },
+      {
+        id: 'p7',
+        name: 'Solace Upholstered Bench',
+        category: 'chairs',
+        categoryName: 'Chairs',
+        price: 640,
+        rating: 4.8,
+        reviewsCount: 11,
+        inStock: true,
+        tag: 'Versatile',
+        primaryImg: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1200&q=80',
+        hoverImg: 'https://images.unsplash.com/photo-1567016432779-094069958ea5?auto=format&fit=crop&w=1200&q=80',
+        gallery: [
+          'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1200&q=80'
+        ],
+        shortDesc: 'Multi-purpose entry or bed-foot bench wrapped in soft textured woven wool.',
+        fullDesc: 'An elegant statement of warmth. Place it at the foot of your bed or welcoming entrance foyer.',
+        materials: 'Woven Wool-blend, FSC Ash Frame.',
+        dimensions: 'W: 130cm × D: 45cm × H: 44cm',
+        weight: '14 kg'
+      },
+      {
+        id: 'p8',
+        name: 'Terracotta Sculptural Vessel',
+        category: 'decor',
+        categoryName: 'Decor',
+        price: 190,
+        rating: 4.9,
+        reviewsCount: 56,
+        inStock: true,
+        tag: 'Hand Crafted',
+        primaryImg: 'https://images.unsplash.com/photo-1612196808214-b7e239e5f6b7?auto=format&fit=crop&w=1200&q=80',
+        hoverImg: 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?auto=format&fit=crop&w=1200&q=80',
+        gallery: [
+          'https://images.unsplash.com/photo-1612196808214-b7e239e5f6b7?auto=format&fit=crop&w=1200&q=80'
+        ],
+        shortDesc: 'Earthy matte clay vase inspired by ancient Mediterranean vessel forms.',
+        fullDesc: 'Adds tactile warmth to shelving, console tables, or dining settings. Water-tight interior allows for fresh floral displays or dried botanicals.',
+        materials: 'High-fire natural Terracotta ceramic.',
+        dimensions: 'Diameter: 22cm × Height: 38cm',
+        weight: '2.8 kg'
+      }
+    ];
+
+    const CATEGORIES = [
+      { id: 'all', name: 'All Products', count: PRODUCTS.length },
+      { id: 'sofas', name: 'Sofas', image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=600&q=80' },
+      { id: 'chairs', name: 'Chairs & Loungers', image: 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=600&q=80' },
+      { id: 'tables', name: 'Tables & Consoles', image: 'https://images.unsplash.com/photo-1530018607912-eff2daa1bac4?auto=format&fit=crop&w=600&q=80' },
+      { id: 'beds', name: 'Beds & Bedrooms', image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=600&q=80' },
+      { id: 'lighting', name: 'Muted Lighting', image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=600&q=80' },
+      { id: 'decor', name: 'Cozy Decor', image: 'https://images.unsplash.com/photo-1612196808214-b7e239e5f6b7?auto=format&fit=crop&w=600&q=80' }
+    ];
+
+    // --- CURRENCIES (prices are stored in USD and converted for display) ---
+    const CURRENCIES = [
+      { code: 'USD', flag: '🇺🇸', name: 'US Dollar', locale: 'en-US' },
+      { code: 'EUR', flag: '🇪🇺', name: 'Euro', locale: 'de-DE' },
+      { code: 'KRW', flag: '🇰🇷', name: 'Korean Won', locale: 'ko-KR' },
+      { code: 'RUB', flag: '🇷🇺', name: 'Russian Ruble', locale: 'ru-RU' },
+      { code: 'GBP', flag: '🇬🇧', name: 'British Pound', locale: 'en-GB' },
+      { code: 'JPY', flag: '🇯🇵', name: 'Japanese Yen', locale: 'ja-JP' },
+    ];
+    // Rough offline estimates, only used if the live rate service cannot be reached
+    const FALLBACK_RATES = { USD: 1, EUR: 0.86, KRW: 1450, RUB: 80, GBP: 0.76, JPY: 155 };
+    const FREE_DELIVERY_USD = 1500;
+
+    // --- EXTRA PRODUCT INFO for the Style Quiz and the Room Planner ---
+    const PRODUCT_TRAITS = {
+      p1: { rooms: ['living'], moods: ['warm'], mats: ['fabric', 'wood'] },
+      p2: { rooms: ['living', 'bedroom'], moods: ['warm', 'sculpt'], mats: ['fabric', 'wood'] },
+      p3: { rooms: ['dining'], moods: ['earthy', 'airy'], mats: ['wood'] },
+      p4: { rooms: ['bedroom'], moods: ['airy', 'warm'], mats: ['wood', 'fabric'] },
+      p5: { rooms: ['living', 'bedroom', 'dining'], moods: ['warm', 'sculpt'], mats: ['stone'] },
+      p6: { rooms: ['living'], moods: ['earthy', 'sculpt'], mats: ['stone'] },
+      p7: { rooms: ['bedroom', 'living'], moods: ['airy', 'earthy'], mats: ['fabric', 'wood'] },
+      p8: { rooms: ['living', 'dining', 'bedroom'], moods: ['earthy', 'sculpt'], mats: ['stone'] },
+    };
+
+    // Floor footprints in cm (w = width, d = depth). place: where it sits. need = comfortable walking space in cm.
+    const FOOTPRINTS = {
+      p1: { w: 230, d: 105, place: 'wall', need: 90, hint: 'in front of the sofa' },
+      p2: { w: 84, d: 88, place: 'wall', need: 80, hint: 'in front of the chair' },
+      p3: { w: 220, d: 95, place: 'center', need: 90, hint: 'around the table for chairs' },
+      p4: { w: 168, d: 218, place: 'bed', need: 60, hint: 'on each side of the bed' },
+      p6: { w: 110, d: 70, place: 'center', need: 60, hint: 'around the table' },
+      p7: { w: 130, d: 45, place: 'wall', need: 90, hint: 'in front of the bench' },
+    };
+
+    // --- WEATHER (WMO codes from Open-Meteo) ---
+    function describeWeather(code, isDay = 1) {
+      if (code === 0) return { label: isDay ? 'Clear sky' : 'Clear night', icon: isDay ? '☀️' : '🌙', kind: 'clear' };
+      if (code === 1) return { label: 'Mostly clear', icon: isDay ? '🌤️' : '🌙', kind: 'clear' };
+      if (code === 2) return { label: 'Partly cloudy', icon: '⛅', kind: 'cloud' };
+      if (code === 3) return { label: 'Overcast', icon: '☁️', kind: 'cloud' };
+      if (code === 45 || code === 48) return { label: 'Foggy', icon: '🌫️', kind: 'fog' };
+      if (code >= 51 && code <= 57) return { label: 'Drizzle', icon: '🌦️', kind: 'rain' };
+      if ((code >= 61 && code <= 67) || (code >= 80 && code <= 82)) return { label: 'Rain', icon: '🌧️', kind: 'rain' };
+      if ((code >= 71 && code <= 77) || code === 85 || code === 86) return { label: 'Snow', icon: '❄️', kind: 'snow' };
+      if (code >= 95) return { label: 'Thunderstorm', icon: '⛈️', kind: 'storm' };
+      return { label: 'Mild', icon: '🌥️', kind: 'cloud' };
+    }
+
+    function cozyAdvice({ feelsC, code, isDay }) {
+      const { kind } = describeWeather(code, isDay);
+      let score = 50 + (18 - feelsC) * 2.2;
+      if (kind === 'rain' || kind === 'storm') score += 18;
+      if (kind === 'snow') score += 22;
+      if (kind === 'fog') score += 10;
+      if (!isDay) score += 8;
+      if (kind === 'clear' && feelsC > 22) score -= 15;
+      score = Math.max(5, Math.min(99, Math.round(score)));
+
+      if (kind === 'snow' || feelsC <= 3)
+        return { score, title: 'Wrap-up-and-stay-in weather', ids: ['p1', 'p5', 'p2'],
+          text: 'It is properly cold out. Sink into deep bouclé, switch on a warm pendant glow and let the outside world wait.' };
+      if (kind === 'rain' || kind === 'storm')
+        return { score, title: 'A rainy-day reading nook', ids: ['p2', 'p5', 'p6'],
+          text: 'Rain on the window is the best excuse for a soft lounge chair, a warm lamp and a low table for your tea.' };
+      if (kind === 'fog')
+        return { score, title: 'Soft light for a soft-focus day', ids: ['p5', 'p4', 'p1'],
+          text: 'Fog makes everything quiet. Layer warm light and a calm bedroom corner to match the mood.' };
+      if (feelsC >= 27)
+        return { score, title: 'Keep it cool and airy', ids: ['p6', 'p3', 'p8'],
+          text: 'Hot day. Cool travertine, light oak and a sculptural vessel keep a room feeling fresh.' };
+      if (kind === 'clear')
+        return { score, title: 'Bright day, gather-around table', ids: ['p3', 'p7', 'p8'],
+          text: 'Beautiful light today. Time for a long lunch around solid oak with flowers in a handmade vessel.' };
+      return { score, title: 'A calm, in-between kind of day', ids: ['p2', 'p4', 'p5'],
+        text: 'Not too hot, not too cold. A good moment to refresh a corner with a quiet chair, a restful bed and soft light.' };
+    }
+
+    // Small warm placeholder used if a photo ever fails to load
+    const IMG_FALLBACK = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><rect width="800" height="600" fill="#EDE5D8"/><g fill="none" stroke="#C9BBA6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M220 380v-70a40 40 0 0 1 40-40h280a40 40 0 0 1 40 40v70"/><path d="M200 380h400v40H200z"/></g><text x="400" y="480" text-anchor="middle" font-family="Georgia,serif" font-size="28" fill="#A99A84">MEBEL</text></svg>'
+    );
+
+    // --- INLINE SVG ICONS ---
+    const IconSearch = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>;
+    const IconHeart = ({ filled }) => <svg className={`w-5 h-5 transition-colors ${filled ? 'fill-terracotta text-terracotta' : 'fill-none stroke-current'}`} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.684a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>;
+    const IconBag = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>;
+    const IconClose = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>;
+    const IconStar = () => <svg className="w-4 h-4 fill-amber-400 text-amber-400" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>;
+    const IconTruck = () => <svg className="w-6 h-6 text-terracotta" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>;
+    const IconShield = () => <svg className="w-6 h-6 text-terracotta" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>;
+    const IconRefresh = () => <svg className="w-6 h-6 text-terracotta" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>;
+    const IconLeaf = () => <svg className="w-6 h-6 text-terracotta" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>;
+
+    const IconMoon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>;
+    const IconSun = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>;
+
+    // Star rating that shows partial stars (4.7 looks like 4.7, not 5)
+    function Stars({ rating }) {
+      return (
+        <div className="flex" aria-label={`${rating} out of 5 stars`} role="img">
+          {[0, 1, 2, 3, 4].map(i => {
+            const fill = Math.max(0, Math.min(1, rating - i));
+            return (
+              <span key={i} className="relative inline-block w-4 h-4">
+                <svg className="absolute inset-0 w-4 h-4 text-taupe-muted fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                <span className="absolute inset-y-0 left-0 overflow-hidden" style={{ width: `${fill * 100}%` }}>
+                  <svg className="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                </span>
+              </span>
+            );
+          })}
+        </div>
+      );
+    }
+
+    // --- MAIN APP COMPONENT ---
+    function App() {
+      // Navigation state: 'home', 'shop', 'productDetail', 'about', 'contact', 'wishlist'
+      const [currentView, setCurrentView] = useState('home');
+      const [selectedCategory, setSelectedCategory] = useState('all');
+      const [selectedProductId, setSelectedProductId] = useState(null);
+      const [sortOption, setSortOption] = useState('featured');
+
+      // Drawer & Modal states
+      const [isCartOpen, setIsCartOpen] = useState(false);
+      const [isSearchOpen, setIsSearchOpen] = useState(false);
+      const [searchQuery, setSearchQuery] = useState('');
+      const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
+      const [policyModal, setPolicyModal] = useState(null); // 'shipping', 'returns', 'privacy'
+
+      // E-commerce state
+      const [cart, setCart] = useState([]);
+      const [wishlist, setWishlist] = useState([]);
+      const [toastMessage, setToastMessage] = useState(null);
+      const [newsletterEmail, setNewsletterEmail] = useState('');
+      const [newsletterSuccess, setNewsletterSuccess] = useState(false);
+
+      // --- Currency (live exchange rates) ---
+      const [currency, setCurrencyState] = useState(() => {
+        try { return localStorage.getItem('mebel-currency') || 'USD'; } catch (e) { return 'USD'; }
+      });
+      const [rates, setRates] = useState(FALLBACK_RATES);
+      const [rateStatus, setRateStatus] = useState('loading'); // 'loading' | 'live' | 'offline'
+      const [rateUpdated, setRateUpdated] = useState('');
+
+      const setCurrency = (code) => {
+        setCurrencyState(code);
+        try { localStorage.setItem('mebel-currency', code); } catch (e) {}
+      };
+
+      useEffect(() => {
+        let cancelled = false;
+        fetch('https://open.er-api.com/v6/latest/USD')
+          .then(r => r.json())
+          .then(data => {
+            if (cancelled || !data || data.result !== 'success') throw new Error('bad rates');
+            const next = {};
+            CURRENCIES.forEach(c => { next[c.code] = data.rates[c.code] || FALLBACK_RATES[c.code]; });
+            setRates(next);
+            setRateStatus('live');
+            setRateUpdated(data.time_last_update_utc ? new Date(data.time_last_update_utc).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '');
+          })
+          .catch(() => { if (!cancelled) setRateStatus('offline'); });
+        return () => { cancelled = true; };
+      }, []);
+
+      // Convert a USD price into the chosen currency and format it nicely
+      const fmt = (usd) => {
+        const info = CURRENCIES.find(c => c.code === currency) || CURRENCIES[0];
+        let value = usd * (rates[currency] || 1);
+        if (currency === 'KRW') value = Math.round(value / 1000) * 1000;
+        else if (currency === 'JPY' || currency === 'RUB') value = Math.round(value / 100) * 100;
+        else value = Math.round(value);
+        try {
+          return new Intl.NumberFormat(info.locale, { style: 'currency', currency, maximumFractionDigits: 0 }).format(value);
+        } catch (e) {
+          return currency + ' ' + value.toLocaleString();
+        }
+      };
+      const money = { fmt, currency, rates, rateStatus, rateUpdated, setCurrency };
+
+      // --- Evening (warm dark) mode ---
+      const [evening, setEvening] = useState(() => {
+        try { return localStorage.getItem('mebel-evening') === '1'; } catch (e) { return false; }
+      });
+      useEffect(() => {
+        document.documentElement.classList.toggle('evening', evening);
+        try { localStorage.setItem('mebel-evening', evening ? '1' : '0'); } catch (e) {}
+      }, [evening]);
+
+      // Photos that fail to load get a calm placeholder instead of a broken-image icon
+      useEffect(() => {
+        const onImgError = (ev) => {
+          const el = ev.target;
+          if (el && el.tagName === 'IMG' && el.dataset.fallback !== '1') {
+            el.dataset.fallback = '1';
+            el.src = IMG_FALLBACK;
+          }
+        };
+        window.addEventListener('error', onImgError, true);
+        return () => window.removeEventListener('error', onImgError, true);
+      }, []);
+
+      // Esc closes any open popup
+      useEffect(() => {
+        const onKey = (ev) => {
+          if (ev.key === 'Escape') {
+            setIsCartOpen(false); setIsSearchOpen(false); setPolicyModal(null); setCheckoutModalOpen(false);
+          }
+        };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+      }, []);
+
+      // Toast notification trigger
+      const showToast = (msg) => {
+        setToastMessage(msg);
+        setTimeout(() => setToastMessage(null), 3000);
+      };
+
+      // Wishlist toggle
+      const toggleWishlist = (id, e) => {
+        if (e) e.stopPropagation();
+        if (wishlist.includes(id)) {
+          setWishlist(wishlist.filter(item => item !== id));
+          showToast("Removed from your wishlist sanctuary");
+        } else {
+          setWishlist([...wishlist, id]);
+          showToast("Saved to your wishlist sanctuary");
+        }
+      };
+
+      // Add to Cart
+      const addToCart = (product, quantity = 1, e) => {
+        if (e) e.stopPropagation();
+        setCart(prevCart => {
+          const existingIndex = prevCart.findIndex(item => item.product.id === product.id);
+          if (existingIndex > -1) {
+            return prevCart.map((item, i) => i === existingIndex ? { ...item, quantity: item.quantity + quantity } : item);
+          }
+          return [...prevCart, { product, quantity, selectedColor: 'Standard Finish' }];
+        });
+        showToast(`Added ${product.name} to your cart`);
+        setIsCartOpen(true);
+      };
+
+      const updateCartQuantity = (productId, delta) => {
+        setCart(prevCart => 
+          prevCart.map(item => {
+            if (item.product.id === productId) {
+              const newQty = item.quantity + delta;
+              return newQty > 0 ? { ...item, quantity: newQty } : null;
+            }
+            return item;
+          }).filter(Boolean)
+        );
+      };
+
+      // Cart calculations
+      const cartSubtotal = useMemo(() => {
+        return cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+      }, [cart]);
+
+      const cartItemCount = useMemo(() => {
+        return cart.reduce((sum, item) => sum + item.quantity, 0);
+      }, [cart]);
+
+      // Filtered & Sorted products
+      const filteredProducts = useMemo(() => {
+        let list = PRODUCTS;
+        if (selectedCategory !== 'all') {
+          list = list.filter(p => p.category === selectedCategory);
+        }
+        if (searchQuery.trim()) {
+          const q = searchQuery.toLowerCase();
+          list = list.filter(p => p.name.toLowerCase().includes(q) || p.shortDesc.toLowerCase().includes(q) || p.categoryName.toLowerCase().includes(q));
+        }
+        if (sortOption === 'price-low') {
+          list = [...list].sort((a, b) => a.price - b.price);
+        } else if (sortOption === 'price-high') {
+          list = [...list].sort((a, b) => b.price - a.price);
+        } else if (sortOption === 'rating') {
+          list = [...list].sort((a, b) => b.rating - a.rating);
+        }
+        return list;
+      }, [selectedCategory, searchQuery, sortOption]);
+
+      // Navigation helpers
+      const openProductDetail = (productId) => {
+        setSelectedProductId(productId);
+        setCurrentView('productDetail');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      const navigateToView = (viewName, category = 'all') => {
+        setCurrentView(viewName);
+        if (category) setSelectedCategory(category);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      const selectedProductObj = useMemo(() => {
+        return PRODUCTS.find(p => p.id === selectedProductId) || PRODUCTS[0];
+      }, [selectedProductId]);
+
+      // One place that builds a product card, so every page behaves the same
+      const renderCard = (product) => (
+        <ProductCard
+          key={product.id}
+          product={product}
+          isWishlisted={wishlist.includes(product.id)}
+          onToggleWishlist={toggleWishlist}
+          onOpenDetail={openProductDetail}
+          onAddToCart={addToCart}
+        />
+      );
+
+      const NAV_ITEMS = [
+        { label: 'Shop', view: 'shop', category: 'all' },
+        { label: 'Collections', view: 'shop', category: 'sofas' },
+        { label: 'Cozy Weather', view: 'weather', isNew: true },
+        { label: 'Style Quiz', view: 'quiz', isNew: true },
+        { label: 'Room Planner', view: 'planner', isNew: true },
+        { label: 'Our Philosophy', view: 'about' },
+        { label: 'Contact', view: 'contact' },
+      ];
+      const isNavActive = (item) =>
+        item.view === 'shop' && currentView === 'shop'
+          ? (item.category === 'all' ? selectedCategory !== 'sofas' : selectedCategory === 'sofas')
+          : currentView === item.view;
+
+      return (
+        <MoneyCtx.Provider value={money}>
+        <div className="min-h-screen flex flex-col justify-between bg-cream text-charcoal">
+          
+          {/* --- ANNOUNCEMENT BANNER --- */}
+          <div className="bg-sand border-b border-taupe/60 text-xs py-2 px-4 text-center tracking-wide font-medium text-charcoal-muted flex justify-center items-center gap-2">
+            <span>✨ Complimentary White-Glove Home Delivery on orders over {fmt(FREE_DELIVERY_USD)}</span>
+            <span className="hidden md:inline">•</span>
+            <span className="hidden md:inline">30-Day Calm In-Home Trial</span>
+            <span className="hidden lg:inline">•</span>
+            <span className="hidden lg:inline">Demo store: checkout is a simulation</span>
+          </div>
+
+          {/* --- STICKY HEADER --- */}
+          <header className="sticky top-0 z-40 bg-cream/90 backdrop-blur-md border-b border-taupe/40 transition-all">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+
+              {/* Logo */}
+              <button
+                onClick={() => navigateToView('home')}
+                className="text-left group flex items-baseline gap-1 shrink-0"
+                aria-label="MEBEL Home"
+              >
+                <span className="font-serif text-2xl sm:text-3xl font-semibold tracking-wider text-charcoal group-hover:text-terracotta transition-colors">
+                  MEBEL
+                </span>
+                <span className="w-1.5 h-1.5 rounded-full bg-terracotta inline-block"></span>
+              </button>
+
+              {/* Desktop Navigation Links */}
+              <nav className="hidden xl:flex items-center gap-6 text-sm tracking-wide font-medium" aria-label="Main">
+                {NAV_ITEMS.map(item => (
+                  <button
+                    key={item.label}
+                    onClick={() => navigateToView(item.view, item.category || 'all')}
+                    className={`transition-colors relative py-1 whitespace-nowrap ${isNavActive(item) ? 'text-terracotta font-semibold' : 'text-charcoal-muted hover:text-charcoal'}`}
+                  >
+                    {item.label}
+                    {item.isNew && <span className="absolute -top-1.5 -right-5 text-[8px] leading-none font-bold bg-terracotta text-white rounded-full px-1 py-0.5">NEW</span>}
+                  </button>
+                ))}
+              </nav>
+
+              {/* Header Action Icons */}
+              <div className="flex items-center gap-1 sm:gap-3">
+                {/* Live currency switcher */}
+                <label className="relative flex items-center" title={rateStatus === 'live' ? `Live exchange rates${rateUpdated ? ' · updated ' + rateUpdated : ''}` : rateStatus === 'loading' ? 'Loading exchange rates…' : 'Offline: showing approximate rates'}>
+                  <span className="sr-only">Currency</span>
+                  <span className={`absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full ${rateStatus === 'live' ? 'bg-olive' : rateStatus === 'loading' ? 'bg-taupe-muted animate-pulse' : 'bg-terracotta'}`}></span>
+                  <select
+                    value={currency}
+                    onChange={(e) => { setCurrency(e.target.value); showToast(`Prices now shown in ${e.target.value}`); }}
+                    className="appearance-none bg-sand border border-taupe rounded-full pl-5 pr-2 py-1.5 text-xs font-semibold text-charcoal cursor-pointer"
+                  >
+                    {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.flag} {c.code}</option>)}
+                  </select>
+                </label>
+
+                <button
+                  onClick={() => setEvening(!evening)}
+                  className="p-2 text-charcoal hover:text-terracotta transition-colors"
+                  aria-label={evening ? 'Switch to daylight mode' : 'Switch to cozy evening mode'}
+                  title={evening ? 'Daylight mode' : 'Cozy evening mode'}
+                >
+                  {evening ? <IconSun /> : <IconMoon />}
+                </button>
+
+                <button
+                  onClick={() => setIsSearchOpen(true)}
+                  className="p-2 text-charcoal hover:text-terracotta transition-colors"
+                  aria-label="Search items"
+                >
+                  <IconSearch />
+                </button>
+
+                <button
+                  onClick={() => navigateToView('wishlist')}
+                  className="p-2 text-charcoal hover:text-terracotta transition-colors relative"
+                  aria-label="View Wishlist"
+                >
+                  <IconHeart filled={wishlist.length > 0} />
+                  {wishlist.length > 0 && (
+                    <span className="absolute top-1 right-1 w-4 h-4 bg-terracotta text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                      {wishlist.length}
+                    </span>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => setIsCartOpen(true)}
+                  className="p-2 text-charcoal hover:text-terracotta transition-colors relative flex items-center gap-1.5"
+                  aria-label="View Shopping Cart"
+                >
+                  <IconBag />
+                  {cartItemCount > 0 && <span className="text-xs font-semibold hidden sm:inline">{fmt(cartSubtotal)}</span>}
+                  {cartItemCount > 0 && (
+                    <span className="w-5 h-5 bg-terracotta text-white text-xs font-bold rounded-full flex items-center justify-center">
+                      {cartItemCount}
+                    </span>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Phone & tablet navigation (the full menu only fits on large screens) */}
+            <nav className="xl:hidden border-t border-taupe/40" aria-label="Main (compact)">
+              <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center gap-2 overflow-x-auto no-scrollbar py-2">
+                <button
+                  onClick={() => navigateToView('home')}
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${currentView === 'home' ? 'bg-terracotta text-white' : 'bg-sand text-charcoal hover:bg-taupe/50'}`}
+                >
+                  Home
+                </button>
+                {NAV_ITEMS.map(item => (
+                  <button
+                    key={item.label}
+                    onClick={() => navigateToView(item.view, item.category || 'all')}
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${isNavActive(item) ? 'bg-terracotta text-white' : 'bg-sand text-charcoal hover:bg-taupe/50'}`}
+                  >
+                    {item.label}{item.isNew && <span className="ml-1 text-[8px] font-bold align-top opacity-80">NEW</span>}
+                  </button>
+                ))}
+              </div>
+            </nav>
+          </header>
+
+          {/* --- SEARCH OVERLAY MODAL --- */}
+          {isSearchOpen && (
+            <div className="fixed inset-0 z-50 bg-charcoal/40 backdrop-blur-sm flex items-start justify-center pt-20 px-4">
+              <div className="bg-cream rounded-2xl max-w-2xl w-full p-6 shadow-cozy border border-taupe relative animate-fadeIn">
+                <div className="flex items-center justify-between border-b border-taupe/60 pb-3">
+                  <div className="flex items-center gap-3 flex-1">
+                    <IconSearch />
+                    <input
+                      type="text"
+                      placeholder="Search furniture, lighting, or decor..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      autoFocus
+                      className="w-full bg-transparent text-base focus:outline-none text-charcoal"
+                    />
+                  </div>
+                  <button onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} aria-label="Close search" className="p-1 text-charcoal-muted hover:text-charcoal">
+                    <IconClose />
+                  </button>
+                </div>
+
+                {/* Realtime Quick Results */}
+                <div className="mt-4 max-h-80 overflow-y-auto space-y-3">
+                  {searchQuery.trim() && filteredProducts.length === 0 ? (
+                    <p className="text-sm text-charcoal-muted text-center py-8">No sanctuaries found for "{searchQuery}"</p>
+                  ) : (
+                    filteredProducts.slice(0, 5).map(item => (
+                      <div 
+                        key={item.id}
+                        onClick={() => {
+                          openProductDetail(item.id);
+                          setIsSearchOpen(false);
+                          setSearchQuery('');
+                        }}
+                        className="flex items-center gap-4 p-2 rounded-xl hover:bg-sand/60 cursor-pointer transition-colors"
+                      >
+                        <img src={item.primaryImg} alt={item.name} className="w-12 h-12 object-cover rounded-lg" />
+                        <div className="flex-1">
+                          <h4 className="text-sm font-semibold">{item.name}</h4>
+                          <span className="text-xs text-charcoal-muted">{item.categoryName} • {fmt(item.price)}</span>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* --- TOAST NOTIFICATION POPUP --- */}
+          {toastMessage && (
+            <div className="fixed bottom-6 right-6 z-50 bg-charcoal text-cream px-5 py-3 rounded-xl shadow-lg text-xs font-medium flex items-center gap-3 animate-slideUp" role="status">
+              <span>🌱 {toastMessage}</span>
+            </div>
+          )}
+
+          {/* --- DYNAMIC MAIN CONTENT PAGES --- */}
+          <main className="flex-grow">
+            
+            {/* VIEW 1: HOME PAGE */}
+            {currentView === 'home' && (
+              <div>
+                {/* HERO SECTION */}
+                <section className="relative max-w-6xl mx-auto my-6 px-4 sm:px-6 lg:px-8">
+                  <div className="relative rounded-3xl overflow-hidden shadow-cozy min-h-[480px] sm:min-h-[580px] flex items-center">
+                    <img 
+                      src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1600&q=80" 
+                      alt="Cozy Scandinavian Room" 
+                      className="absolute inset-0 w-full h-full object-cover object-center"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-cream/90 via-cream/60 to-transparent sm:w-2/3"></div>
+                    
+                    <div className="relative z-10 p-8 sm:p-14 max-w-xl">
+                      <span className="text-xs uppercase tracking-widest font-semibold text-terracotta mb-2 block">
+                        Quiet Luxury & Japandi Craft
+                      </span>
+                      <h1 className="font-serif text-3xl sm:text-5xl font-medium tracking-tight leading-tight text-charcoal mb-4">
+                        Crafting Sanctuaries of Calm & Warmth
+                      </h1>
+                      <p className="text-sm sm:text-base text-charcoal-muted leading-relaxed mb-8">
+                        Thoughtfully sculpted furniture designed to slow down the day. Natural wood grains, tactile linen, and serene Scandinavian geometry.
+                      </p>
+                      <div className="flex flex-wrap items-center gap-4">
+                        <button 
+                          onClick={() => navigateToView('shop', 'all')}
+                          className="px-7 py-3.5 rounded-full bg-terracotta text-white text-xs sm:text-sm font-semibold hover:bg-terracotta-hover transition-all shadow-md hover:shadow-lg"
+                        >
+                          Shop the Collection
+                        </button>
+                        <button 
+                          onClick={() => navigateToView('about')}
+                          className="px-6 py-3.5 rounded-full border border-charcoal/20 bg-cream/70 backdrop-blur-sm text-xs sm:text-sm font-medium hover:bg-cream transition-colors"
+                        >
+                          Our Story
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* STUDIO TOOLS: the interactive features */}
+                <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10">
+                  <div className="text-center max-w-xl mx-auto mb-8">
+                    <span className="text-xs font-semibold text-terracotta tracking-wider uppercase">Try it yourself</span>
+                    <h2 className="font-serif text-2xl sm:text-3xl font-medium mt-1">Your Home, Your Way</h2>
+                    <p className="text-xs sm:text-sm text-charcoal-muted mt-2">Three little tools that make choosing furniture calmer, and a bit more fun.</p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    {[
+                      { view: 'weather', icon: '🌤️', title: 'Cozy Weather', tag: 'Live data', text: 'Type any city. We check the weather there right now and suggest the pieces that suit the day.' },
+                      { view: 'quiz', icon: '🪴', title: 'Find Your Sanctuary', tag: '1 minute', text: 'Four quick questions about your room and mood, and we pick your best-matching pieces.' },
+                      { view: 'planner', icon: '📐', title: 'Room Planner', tag: 'Will it fit?', text: 'Enter your room size and see a to-scale drawing of how a sofa, bed or table would sit in it.' },
+                    ].map(tool => (
+                      <button
+                        key={tool.view}
+                        onClick={() => navigateToView(tool.view)}
+                        className="group text-left rounded-3xl bg-sand border border-taupe/60 p-6 hover:border-terracotta/50 hover:shadow-cozy-hover transition-all"
+                      >
+                        <div className="flex items-center justify-between mb-5">
+                          <span className="text-3xl" aria-hidden="true">{tool.icon}</span>
+                          <span className="text-[10px] font-semibold uppercase tracking-wider text-olive bg-olive-soft rounded-full px-2.5 py-1">{tool.tag}</span>
+                        </div>
+                        <h3 className="font-serif text-xl font-medium group-hover:text-terracotta transition-colors">{tool.title}</h3>
+                        <p className="text-xs text-charcoal-muted leading-relaxed mt-2">{tool.text}</p>
+                        <span className="inline-block mt-4 text-xs font-semibold text-terracotta">Open &rarr;</span>
+                      </button>
+                    ))}
+                  </div>
+                </section>
+
+                {/* FEATURED CATEGORIES GRID */}
+                <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+                  <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8">
+                    <div>
+                      <span className="text-xs font-semibold text-terracotta tracking-wider uppercase">Curated Spaces</span>
+                      <h2 className="font-serif text-2xl sm:text-3xl font-medium mt-1">Explore by Category</h2>
+                    </div>
+                    <button 
+                      onClick={() => navigateToView('shop', 'all')} 
+                      className="text-xs font-semibold text-terracotta hover:underline mt-2 sm:mt-0 flex items-center gap-1"
+                    >
+                      <span>View All Categories</span> &rarr;
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                    {CATEGORIES.filter(c => c.id !== 'all').map(cat => (
+                      <div 
+                        key={cat.id}
+                        onClick={() => navigateToView('shop', cat.id)}
+                        className="group cursor-pointer rounded-2xl bg-sand p-3 border border-taupe/40 hover:border-terracotta/40 transition-all hover:shadow-cozy text-center"
+                      >
+                        <div className="img-zoom-container rounded-xl h-28 mb-3">
+                          <img src={cat.image} alt={cat.name} className="w-full h-full object-cover" />
+                        </div>
+                        <h3 className="text-xs font-semibold text-charcoal group-hover:text-terracotta transition-colors">{cat.name}</h3>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+
+                {/* HIGHLIGHT PRODUCT GRID */}
+                <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+                  <div className="text-center max-w-lg mx-auto mb-10">
+                    <span className="text-xs font-semibold text-terracotta tracking-wider uppercase">Handpicked Pieces</span>
+                    <h2 className="font-serif text-3xl font-medium mt-1">Signature Collections</h2>
+                    <p className="text-xs text-charcoal-muted mt-2">Every piece is sustainably sourced, precision-assembled, and finished with organic matte oils.</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {PRODUCTS.slice(0, 4).map(product => (
+                      <ProductCard 
+                        key={product.id} 
+                        product={product} 
+                        isWishlisted={wishlist.includes(product.id)}
+                        onToggleWishlist={toggleWishlist}
+                        onOpenDetail={openProductDetail}
+                        onAddToCart={addToCart}
+                      />
+                    ))}
+                  </div>
+                </section>
+
+                {/* VALUE & PHILOSOPHY BANNER */}
+                <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+                  <div className="rounded-3xl bg-sand p-8 sm:p-14 border border-taupe/60 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+                    <div>
+                      <span className="text-xs font-semibold text-olive uppercase tracking-wider">Natural Materials</span>
+                      <h2 className="font-serif text-2xl sm:text-4xl font-medium mt-2 leading-tight">
+                        Built from sustainably harvested European Oak & Natural Clay
+                      </h2>
+                      <p className="text-xs sm:text-sm text-charcoal-muted mt-4 leading-relaxed">
+                        We reject throwaway culture. MEBEL collaborates with artisan workshops to craft heirloom furniture that ages gracefully alongside your home memories.
+                      </p>
+                      <div className="mt-6 flex gap-6 text-xs font-medium text-charcoal">
+                        <div><strong className="block text-base font-serif text-terracotta">100%</strong> FSC-Certified Timber</div>
+                        <div><strong className="block text-base font-serif text-terracotta">Zero</strong> VOC Organic Finishes</div>
+                      </div>
+                    </div>
+                    <div className="rounded-2xl overflow-hidden shadow-cozy h-64 sm:h-80">
+                      <img 
+                        src="https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?auto=format&fit=crop&w=1000&q=80" 
+                        alt="Wood Crafting Details" 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+                </section>
+
+                {/* TRUST & VALUES SECTION */}
+                <TrustSection />
+              </div>
+            )}
+
+            {/* VIEW 2: SHOP CATALOG PAGE */}
+            {currentView === 'shop' && (
+              <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+                {/* BREADCRUMB */}
+                <nav className="text-xs text-charcoal-muted mb-4 flex items-center gap-2">
+                  <button onClick={() => navigateToView('home')} className="hover:underline">Home</button>
+                  <span>/</span>
+                  <span className="text-charcoal font-medium capitalize">Shop ({selectedCategory})</span>
+                </nav>
+
+                <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-taupe/60 pb-6 mb-8 gap-4">
+                  <div>
+                    <h1 className="font-serif text-3xl sm:text-4xl font-medium">Furniture Sanctuary Collection</h1>
+                    <p className="text-xs text-charcoal-muted mt-1">Explore quiet luxury pieces for living, dining, resting, and ambient lighting.</p>
+                  </div>
+
+                  {/* Sorting dropdown */}
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-charcoal-muted font-medium">Sort by:</span>
+                    <select
+                      value={sortOption}
+                      onChange={(e) => setSortOption(e.target.value)}
+                      className="bg-sand border border-taupe text-xs rounded-xl px-3 py-2 font-medium focus:outline-none"
+                    >
+                      <option value="featured">Featured First</option>
+                      <option value="price-low">Price: Low to High</option>
+                      <option value="price-high">Price: High to Low</option>
+                      <option value="rating">Highest Rated</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Category Filter Pills */}
+                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-4 mb-8">
+                  {CATEGORIES.map(cat => (
+                    <button
+                      key={cat.id}
+                      onClick={() => setSelectedCategory(cat.id)}
+                      className={`px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
+                        selectedCategory === cat.id
+                          ? 'bg-terracotta text-white shadow-sm'
+                          : 'bg-sand text-charcoal hover:bg-taupe/50'
+                      }`}
+                    >
+                      {cat.name}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Grid */}
+                {filteredProducts.length === 0 ? (
+                  <div className="text-center py-20 bg-sand/40 rounded-3xl">
+                    <p className="text-base text-charcoal font-medium">No items matched your category filter.</p>
+                    <button 
+                      onClick={() => setSelectedCategory('all')} 
+                      className="mt-3 text-xs text-terracotta underline font-semibold"
+                    >
+                      Clear Category Filters
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {filteredProducts.map(product => (
+                      <ProductCard 
+                        key={product.id} 
+                        product={product} 
+                        isWishlisted={wishlist.includes(product.id)}
+                        onToggleWishlist={toggleWishlist}
+                        onOpenDetail={openProductDetail}
+                        onAddToCart={addToCart}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* VIEW 3: PRODUCT DETAIL PAGE */}
+            {currentView === 'productDetail' && (
+              <ProductDetailView 
+                product={selectedProductObj}
+                isWishlisted={wishlist.includes(selectedProductObj.id)}
+                onToggleWishlist={toggleWishlist}
+                onAddToCart={addToCart}
+                onNavigateHome={() => navigateToView('home')}
+                onNavigateShop={() => navigateToView('shop', 'all')}
+                onOpenProduct={openProductDetail}
+                allProducts={PRODUCTS}
+                wishlist={wishlist}
+              />
+            )}
+
+            {/* VIEW 4: ABOUT PAGE */}
+            {currentView === 'about' && (
+              <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+                <nav className="text-xs text-charcoal-muted mb-6 flex items-center gap-2">
+                  <button onClick={() => navigateToView('home')} className="hover:underline">Home</button>
+                  <span>/</span>
+                  <span className="text-charcoal font-medium">Our Philosophy</span>
+                </nav>
+
+                <span className="text-xs font-semibold text-terracotta uppercase tracking-wider">The MEBEL Heritage</span>
+                <h1 className="font-serif text-3xl sm:text-5xl font-medium mt-2 mb-6">Designing Warmth, Stillness & Sanctuary</h1>
+                
+                <div className="rounded-2xl overflow-hidden mb-8 h-80 shadow-cozy">
+                  <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80" alt="MEBEL Showroom Aesthetic" className="w-full h-full object-cover" />
+                </div>
+
+                <div className="prose prose-stone max-w-none text-sm text-charcoal-muted leading-relaxed space-y-4">
+                  <p>
+                    Founded with a singular vision, <strong>MEBEL</strong> bridges the quiet simplicity of Scandinavian living (Hygge) with Japanese reverence for raw natural texture (Wabi-Sabi). We believe your home should be a calming sanctuary from the noise of modern life.
+                  </p>
+                  <p>
+                    Every table, lounge chair, and lighting fixture in our showroom begins with ethical material selection: FSC-certified solid European white oak, unglazed Kyoto stoneware clay, and organic linen textiles.
+                  </p>
+                  <p>
+                    We reject mass manufacturing in favor of slow, durable craftsmanship that gains character over decades.
+                  </p>
+                </div>
+
+                <div className="mt-12 p-8 bg-sand rounded-3xl border border-taupe flex flex-col sm:flex-row items-center justify-between gap-6">
+                  <div>
+                    <h3 className="font-serif text-xl font-medium">Experience Our Calm Showroom</h3>
+                    <p className="text-xs text-charcoal-muted mt-1">Visit our studio space for personal design consultations & tea.</p>
+                  </div>
+                  <button onClick={() => navigateToView('contact')} className="px-6 py-3 rounded-full bg-terracotta text-white text-xs font-semibold whitespace-nowrap">
+                    Schedule Visit
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* VIEW 5: CONTACT PAGE */}
+            {currentView === 'contact' && (
+              <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+                <nav className="text-xs text-charcoal-muted mb-6 flex items-center gap-2">
+                  <button onClick={() => navigateToView('home')} className="hover:underline">Home</button>
+                  <span>/</span>
+                  <span className="text-charcoal font-medium">Contact Us</span>
+                </nav>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                  <div>
+                    <span className="text-xs font-semibold text-terracotta uppercase tracking-wider">Get in Touch</span>
+                    <h1 className="font-serif text-3xl font-medium mt-1 mb-4">We are here to assist your sanctuary</h1>
+                    <p className="text-xs text-charcoal-muted leading-relaxed mb-6">
+                      Have questions regarding dimensions, fabric swatches, or custom interior advice? Send us a message or pop into our physical studio.
+                    </p>
+
+                    <div className="space-y-4 text-xs">
+                      <div>
+                        <strong className="block font-semibold text-charcoal">MEBEL Studio & Showroom:</strong>
+                        <span className="text-charcoal-muted">Ulitsa Arbat 24, Moscow, Russia</span>
+                      </div>
+                      <div>
+                        <strong className="block font-semibold text-charcoal">Concierge Email:</strong>
+                        <span className="text-charcoal-muted">hello@mebel.ru</span>
+                      </div>
+                      <div>
+                        <strong className="block font-semibold text-charcoal">Customer Care Hours:</strong>
+                        <span className="text-charcoal-muted">Mon–Sat: 10:00 - 19:00 MSK</span>
+                      </div>
+                      <p className="text-[11px] text-charcoal-light italic pt-2">Demo contact details: replace with your real address and email before launch.</p>
+                    </div>
+                  </div>
+
+                  <form 
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      showToast("Thank you! Your message has been sent to our concierge.");
+                      e.target.reset();
+                    }}
+                    className="bg-sand p-6 rounded-2xl border border-taupe space-y-4"
+                  >
+                    <h3 className="font-serif text-lg font-medium">Send a Message</h3>
+                    <div>
+                      <label className="block text-xs font-medium text-charcoal-muted mb-1">Your Name</label>
+                      <input type="text" required className="w-full bg-cream border border-taupe rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-charcoal-muted mb-1">Email Address</label>
+                      <input type="email" required className="w-full bg-cream border border-taupe rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-charcoal-muted mb-1">Message</label>
+                      <textarea rows="4" required className="w-full bg-cream border border-taupe rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta resize-none"></textarea>
+                    </div>
+                    <button type="submit" className="w-full py-3 rounded-full bg-terracotta text-white text-xs font-semibold hover:bg-terracotta-hover transition-colors">
+                      Send Enquiry
+                    </button>
+                  </form>
+                </div>
+              </div>
+            )}
+
+            {/* VIEW 6: WISHLIST VIEW */}
+            {currentView === 'wishlist' && (
+              <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <nav className="text-xs text-charcoal-muted mb-4 flex items-center gap-2">
+                  <button onClick={() => navigateToView('home')} className="hover:underline">Home</button>
+                  <span>/</span>
+                  <span className="text-charcoal font-medium">Wishlist Sanctuary</span>
+                </nav>
+
+                <h1 className="font-serif text-3xl font-medium mb-6">Your Saved Pieces ({wishlist.length})</h1>
+
+                {wishlist.length === 0 ? (
+                  <div className="text-center py-20 bg-sand/40 rounded-3xl">
+                    <p className="text-sm text-charcoal-muted mb-4">Your wishlist is currently empty.</p>
+                    <button onClick={() => navigateToView('shop', 'all')} className="px-6 py-2.5 bg-terracotta text-white text-xs font-semibold rounded-full">
+                      Explore Collection
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {PRODUCTS.filter(p => wishlist.includes(p.id)).map(product => (
+                      <ProductCard 
+                        key={product.id} 
+                        product={product} 
+                        isWishlisted={true}
+                        onToggleWishlist={toggleWishlist}
+                        onOpenDetail={openProductDetail}
+                        onAddToCart={addToCart}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* VIEW 7: COZY WEATHER */}
+            {currentView === 'weather' && (
+              <WeatherPage renderCard={renderCard} onNavigate={navigateToView} />
+            )}
+
+            {/* VIEW 8: STYLE QUIZ */}
+            {currentView === 'quiz' && (
+              <StyleQuiz renderCard={renderCard} onAddToCart={addToCart} onNavigate={navigateToView} />
+            )}
+
+            {/* VIEW 9: ROOM PLANNER */}
+            {currentView === 'planner' && (
+              <RoomPlanner onAddToCart={addToCart} onOpenDetail={openProductDetail} onNavigate={navigateToView} />
+            )}
+
+          </main>
+
+          {/* --- SLIDE-OVER CART DRAWER --- */}
+          {isCartOpen && (
+            <div className="fixed inset-0 z-50 overflow-hidden">
+              <div 
+                className="absolute inset-0 bg-charcoal/40 backdrop-blur-xs transition-opacity"
+                onClick={() => setIsCartOpen(false)}
+              ></div>
+
+              <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
+                <div className="w-screen max-w-md bg-cream shadow-drawer border-l border-taupe p-6 flex flex-col justify-between">
+                  
+                  {/* Cart Header */}
+                  <div>
+                    <div className="flex items-center justify-between pb-4 border-b border-taupe">
+                      <div className="flex items-center gap-2">
+                        <IconBag />
+                        <h2 className="font-serif text-xl font-medium">Your Shopping Sanctuary</h2>
+                      </div>
+                      <button onClick={() => setIsCartOpen(false)} className="p-1 text-charcoal-muted hover:text-charcoal">
+                        <IconClose />
+                      </button>
+                    </div>
+
+                    {/* Cart Items List */}
+                    <div className="mt-6 space-y-4 max-h-[55vh] overflow-y-auto pr-1">
+                      {cart.length === 0 ? (
+                        <p className="text-xs text-charcoal-muted text-center py-12">Your cart is feeling light. Add cozy pieces to begin.</p>
+                      ) : (
+                        cart.map(item => (
+                          <div key={item.product.id} className="flex gap-4 p-3 rounded-2xl bg-sand/60 border border-taupe/40">
+                            <img src={item.product.primaryImg} alt={item.product.name} className="w-20 h-20 object-cover rounded-xl" />
+                            <div className="flex-1 flex flex-col justify-between">
+                              <div>
+                                <div className="flex justify-between items-start">
+                                  <h4 className="text-xs font-semibold text-charcoal leading-snug">{item.product.name}</h4>
+                                  <button onClick={() => updateCartQuantity(item.product.id, -item.quantity)} className="text-[10px] text-charcoal-muted hover:text-red-500">Remove</button>
+                                </div>
+                                <span className="text-[11px] text-charcoal-muted mt-0.5 block">{item.selectedColor}</span>
+                              </div>
+
+                              <div className="flex justify-between items-center mt-2">
+                                <div className="flex items-center border border-taupe rounded-lg bg-cream">
+                                  <button onClick={() => updateCartQuantity(item.product.id, -1)} className="px-2 py-0.5 text-xs">-</button>
+                                  <span className="px-2 text-xs font-semibold">{item.quantity}</span>
+                                  <button onClick={() => updateCartQuantity(item.product.id, 1)} className="px-2 py-0.5 text-xs">+</button>
+                                </div>
+                                <span className="text-xs font-semibold">{fmt(item.product.price * item.quantity)}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Cart Footer / Subtotal */}
+                  {cart.length > 0 && (
+                    <div className="border-t border-taupe pt-4 space-y-3">
+                      {/* Progress toward free white-glove delivery */}
+                      <div>
+                        <div className="h-1.5 rounded-full bg-taupe overflow-hidden">
+                          <div className="h-full bg-olive transition-all duration-500" style={{ width: `${Math.min(100, (cartSubtotal / FREE_DELIVERY_USD) * 100)}%` }}></div>
+                        </div>
+                        <p className="text-[11px] text-charcoal-muted mt-1.5">
+                          {cartSubtotal >= FREE_DELIVERY_USD
+                            ? '🎉 You have unlocked free white-glove delivery'
+                            : `Add ${fmt(FREE_DELIVERY_USD - cartSubtotal)} more for free white-glove delivery`}
+                        </p>
+                      </div>
+                      <div className="flex justify-between text-xs text-charcoal-muted">
+                        <span>Delivery</span>
+                        <span className={cartSubtotal >= FREE_DELIVERY_USD ? 'text-olive font-semibold' : ''}>
+                          {cartSubtotal >= FREE_DELIVERY_USD ? 'Free (White Glove)' : 'Calculated at checkout'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-base font-serif font-semibold text-charcoal">
+                        <span>Subtotal</span>
+                        <span>{fmt(cartSubtotal)}</span>
+                      </div>
+                      <button 
+                        onClick={() => {
+                          setIsCartOpen(false);
+                          setCheckoutModalOpen(true);
+                        }}
+                        className="w-full py-3.5 rounded-full bg-terracotta text-white text-xs font-semibold hover:bg-terracotta-hover transition-colors shadow-md"
+                      >
+                        Proceed to Checkout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* --- CHECKOUT SIMULATOR MODAL --- */}
+          {checkoutModalOpen && (
+            <div className="fixed inset-0 z-50 bg-charcoal/50 backdrop-blur-sm flex items-center justify-center p-4">
+              <div className="bg-cream rounded-3xl max-w-md w-full p-6 shadow-cozy border border-taupe text-center">
+                <span className="text-3xl">🕊️</span>
+                <h3 className="font-serif text-2xl font-medium mt-2">Demo Order Complete</h3>
+                <p className="text-xs text-charcoal-muted mt-2 leading-relaxed">
+                  Thank you for trying the MEBEL store. This is a demonstration checkout: no payment was taken and no order was placed.
+                </p>
+                <div className="my-6 p-4 bg-sand rounded-2xl text-xs text-left space-y-1 border border-taupe/40">
+                  <div className="flex justify-between"><span>Items ({cartItemCount}):</span> <strong>{fmt(cartSubtotal)}</strong></div>
+                  <div className="flex justify-between"><span>Delivery:</span> <strong className={cartSubtotal >= FREE_DELIVERY_USD ? 'text-olive' : ''}>{cartSubtotal >= FREE_DELIVERY_USD ? 'Free White Glove' : 'Quoted at real checkout'}</strong></div>
+                  <div className="flex justify-between pt-2 border-t border-taupe font-bold"><span>Demo total:</span> <strong>{fmt(cartSubtotal)}</strong></div>
+                </div>
+                <button 
+                  onClick={() => {
+                    setCart([]);
+                    setCheckoutModalOpen(false);
+                  }}
+                  className="w-full py-3 rounded-full bg-terracotta text-white text-xs font-semibold"
+                >
+                  Return to Store
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* --- POLICY / TERMS FOOTER MODAL --- */}
+          {policyModal && (
+            <div className="fixed inset-0 z-50 bg-charcoal/40 backdrop-blur-sm flex items-center justify-center p-4">
+              <div className="bg-cream rounded-3xl max-w-lg w-full p-6 shadow-cozy border border-taupe relative">
+                <button onClick={() => setPolicyModal(null)} className="absolute top-4 right-4 text-charcoal-muted hover:text-charcoal">
+                  <IconClose />
+                </button>
+                <h3 className="font-serif text-2xl font-medium capitalize mb-3">{policyModal} Information</h3>
+                <div className="text-xs text-charcoal-muted leading-relaxed space-y-3 max-h-64 overflow-y-auto">
+                  {policyModal === 'shipping' && (
+                    <p>We deliver nationwide across Russia & internationally. All orders above {fmt(FREE_DELIVERY_USD)} receive white-glove assembly, package removal, and room placement free of charge.</p>
+                  )}
+                  {policyModal === 'returns' && (
+                    <p>Enjoy 30 days in your home. If a piece does not bring calm to your room, contact our concierge for a hassle-free return and full refund.</p>
+                  )}
+                  {policyModal === 'privacy' && (
+                    <p>Your sanctuary privacy is paramount. We never sell or distribute client information to third parties.</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* --- FOOTER --- */}
+          <footer className="bg-sand border-t border-taupe mt-16">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                
+                {/* Col 1: Brand info */}
+                <div className="md:col-span-1">
+                  <button onClick={() => navigateToView('home')} className="font-serif text-2xl font-semibold tracking-wider text-charcoal block mb-3">
+                    MEBEL
+                  </button>
+                  <p className="text-xs text-charcoal-muted leading-relaxed">
+                    Scandinavian and Japandi furniture crafted for warm, calm home sanctuaries.
+                  </p>
+                </div>
+
+                {/* Col 2: Navigation Links */}
+                <div>
+                  <h4 className="text-xs font-semibold text-charcoal uppercase tracking-wider mb-3">Explore</h4>
+                  <ul className="space-y-2 text-xs text-charcoal-muted">
+                    <li><button onClick={() => navigateToView('shop', 'sofas')} className="hover:text-terracotta">Sofas & Loungers</button></li>
+                    <li><button onClick={() => navigateToView('shop', 'tables')} className="hover:text-terracotta">Dining & Tables</button></li>
+                    <li><button onClick={() => navigateToView('shop', 'beds')} className="hover:text-terracotta">Beds & Bedrooms</button></li>
+                    <li><button onClick={() => navigateToView('shop', 'lighting')} className="hover:text-terracotta">Ambient Lighting</button></li>
+                    <li><button onClick={() => navigateToView('quiz')} className="hover:text-terracotta">Style Quiz</button></li>
+                    <li><button onClick={() => navigateToView('planner')} className="hover:text-terracotta">Room Planner</button></li>
+                  </ul>
+                </div>
+
+                {/* Col 3: Customer Care */}
+                <div>
+                  <h4 className="text-xs font-semibold text-charcoal uppercase tracking-wider mb-3">Concierge</h4>
+                  <ul className="space-y-2 text-xs text-charcoal-muted">
+                    <li><button onClick={() => setPolicyModal('shipping')} className="hover:text-terracotta">Shipping & Assembly</button></li>
+                    <li><button onClick={() => setPolicyModal('returns')} className="hover:text-terracotta">30-Day Home Trial</button></li>
+                    <li><button onClick={() => setPolicyModal('privacy')} className="hover:text-terracotta">Privacy Policy</button></li>
+                    <li><button onClick={() => navigateToView('contact')} className="hover:text-terracotta">Contact Support</button></li>
+                  </ul>
+                </div>
+
+                {/* Col 4: Newsletter */}
+                <div>
+                  <h4 className="text-xs font-semibold text-charcoal uppercase tracking-wider mb-3">Stay Connected</h4>
+                  <p className="text-xs text-charcoal-muted mb-3">Receive seasonal design lookbooks and quiet sanctuary inspiration.</p>
+                  
+                  {newsletterSuccess ? (
+                    <div className="text-xs text-emerald-700 font-medium">✓ Welcome to our quiet newsletter family.</div>
+                  ) : (
+                    <form 
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        if (newsletterEmail) setNewsletterSuccess(true);
+                      }}
+                      className="flex gap-2"
+                    >
+                      <input 
+                        type="email" 
+                        placeholder="Your email..." 
+                        value={newsletterEmail}
+                        onChange={(e) => setNewsletterEmail(e.target.value)}
+                        required 
+                        className="w-full bg-cream border border-taupe rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta" 
+                      />
+                      <button type="submit" className="px-4 py-2 bg-terracotta text-white rounded-xl text-xs font-semibold hover:bg-terracotta-hover transition-colors">
+                        Join
+                      </button>
+                    </form>
+                  )}
+                </div>
+
+              </div>
+
+              {/* Bottom Copyright */}
+              <div className="pt-8 border-t border-taupe/60 flex flex-col sm:flex-row items-center justify-between text-xs text-charcoal-muted gap-4">
+                <div className="text-center sm:text-left space-y-1">
+                  <span className="block">© {new Date().getFullYear()} MEBEL. Quiet Luxury Furniture. Demo store for presentation.</span>
+                  <span className="block text-[11px] text-charcoal-light">
+                    {rateStatus === 'live'
+                      ? `Live rate: 1 USD = ${(rates[currency] || 1).toLocaleString(undefined, { maximumFractionDigits: 2 })} ${currency}${rateUpdated ? ' · updated ' + rateUpdated : ''}`
+                      : rateStatus === 'loading' ? 'Loading exchange rates…' : 'Exchange rates are approximate (offline)'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" className="hover:text-terracotta">Instagram</a>
+                  <a href="https://www.pinterest.com/" target="_blank" rel="noopener noreferrer" className="hover:text-terracotta">Pinterest</a>
+                  <a href="https://telegram.org/" target="_blank" rel="noopener noreferrer" className="hover:text-terracotta">Telegram</a>
+                </div>
+              </div>
+            </div>
+          </footer>
+
+        </div>
+        </MoneyCtx.Provider>
+      );
+    }
+
+    // --- REUSABLE PRODUCT CARD COMPONENT ---
+    function ProductCard({ product, isWishlisted, onToggleWishlist, onOpenDetail, onAddToCart }) {
+      const [isHovered, setIsHovered] = useState(false);
+      const { fmt } = useMoney();
+
+      return (
+        <div
+          className="group cursor-pointer rounded-2xl bg-cream border border-taupe/40 overflow-hidden hover:shadow-cozy-hover transition-all duration-300 flex flex-col justify-between"
+          onClick={() => onOpenDetail(product.id)}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <div>
+            {/* Image Container */}
+            <div className="relative aspect-[4/3] overflow-hidden bg-sand">
+              <img 
+                src={isHovered && product.hoverImg ? product.hoverImg : product.primaryImg} 
+                alt={product.name} 
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              
+              {/* Badge */}
+              {product.tag && (
+                <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-cream/90 backdrop-blur-md text-[10px] font-semibold text-charcoal border border-taupe/50">
+                  {product.tag}
+                </span>
+              )}
+
+              {/* Wishlist Button */}
+              <button
+                onClick={(e) => onToggleWishlist(product.id, e)}
+                className="absolute top-3 right-3 p-2 rounded-full bg-cream/80 backdrop-blur-md hover:bg-cream transition-colors text-charcoal shadow-sm"
+                aria-label="Wishlist"
+              >
+                <IconHeart filled={isWishlisted} />
+              </button>
+            </div>
+
+            {/* Product Meta */}
+            <div className="p-4">
+              <div className="flex items-center gap-1.5 mb-1">
+                <Stars rating={product.rating} />
+                <span className="text-xs font-semibold text-charcoal">{product.rating.toFixed(1)}</span>
+                <span className="text-[11px] text-charcoal-muted">({product.reviewsCount})</span>
+              </div>
+
+              <h3 className="text-sm font-semibold text-charcoal group-hover:text-terracotta transition-colors leading-snug">
+                {product.name}
+              </h3>
+              <p className="text-xs text-charcoal-muted line-clamp-2 mt-1 leading-relaxed">
+                {product.shortDesc}
+              </p>
+            </div>
+          </div>
+
+          {/* Price & Quick Add */}
+          <div className="p-4 pt-0 flex items-center justify-between border-t border-transparent group-hover:border-taupe/30 transition-colors">
+            <span className="text-sm font-serif font-semibold text-charcoal">{fmt(product.price)}</span>
+            <button
+              onClick={(e) => onAddToCart(product, 1, e)}
+              className="px-3.5 py-1.5 rounded-full border border-terracotta/30 text-terracotta text-xs font-semibold hover:bg-terracotta hover:text-white transition-all"
+            >
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // --- PRODUCT DETAIL VIEW COMPONENT ---
+    function ProductDetailView({ product, isWishlisted, onToggleWishlist, onAddToCart, onNavigateHome, onNavigateShop, onOpenProduct, allProducts, wishlist = [] }) {
+      const { fmt } = useMoney();
+      const [activeImg, setActiveImg] = useState(product.primaryImg);
+      const [activeTab, setActiveTab] = useState('materials');
+      const [quantity, setQuantity] = useState(1);
+
+      useEffect(() => {
+        setActiveImg(product.primaryImg);
+      }, [product]);
+
+      const relatedProducts = useMemo(() => {
+        return allProducts.filter(p => p.category === product.category && p.id !== product.id).slice(0, 3);
+      }, [allProducts, product]);
+
+      return (
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+          
+          {/* Breadcrumb */}
+          <nav className="text-xs text-charcoal-muted mb-6 flex items-center gap-2">
+            <button onClick={onNavigateHome} className="hover:underline">Home</button>
+            <span>/</span>
+            <button onClick={onNavigateShop} className="hover:underline">Shop</button>
+            <span>/</span>
+            <span className="text-charcoal font-medium">{product.name}</span>
+          </nav>
+
+          {/* Main Product Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
+            
+            {/* Gallery Column */}
+            <div className="space-y-4">
+              <div className="rounded-3xl overflow-hidden bg-sand border border-taupe shadow-cozy aspect-[4/3]">
+                <img src={activeImg} alt={product.name} className="w-full h-full object-cover" />
+              </div>
+
+              {/* Thumbnails */}
+              <div className="flex gap-3">
+                {product.gallery.map((imgUrl, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveImg(imgUrl)}
+                    className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${
+                      activeImg === imgUrl ? 'border-terracotta shadow-sm scale-105' : 'border-transparent opacity-70 hover:opacity-100'
+                    }`}
+                  >
+                    <img src={imgUrl} alt="Thumbnail" className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Product Meta Column */}
+            <div className="flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-terracotta uppercase tracking-wider">{product.categoryName}</span>
+                  <button onClick={(e) => onToggleWishlist(product.id, e)} className="p-2 rounded-full border border-taupe">
+                    <IconHeart filled={isWishlisted} />
+                  </button>
+                </div>
+
+                <h1 className="font-serif text-3xl sm:text-4xl font-medium mt-2">{product.name}</h1>
+
+                <div className="flex items-center gap-2 mt-3">
+                  <Stars rating={product.rating} />
+                  <span className="text-xs font-semibold">{product.rating.toFixed(1)}</span>
+                  <span className="text-xs text-charcoal-muted">({product.reviewsCount} verified reviews)</span>
+                </div>
+
+                <div className="text-2xl font-serif font-semibold text-charcoal mt-4">
+                  {fmt(product.price)}
+                </div>
+
+                <p className="text-xs sm:text-sm text-charcoal-muted leading-relaxed mt-4">
+                  {product.fullDesc}
+                </p>
+
+                {/* Quantity & CTA */}
+                <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                  <div className="flex items-center border border-taupe rounded-full bg-sand px-3 py-2 w-32 justify-between">
+                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-2 text-base font-bold text-charcoal-muted">-</button>
+                    <span className="text-xs font-semibold">{quantity}</span>
+                    <button onClick={() => setQuantity(quantity + 1)} className="px-2 text-base font-bold text-charcoal-muted">+</button>
+                  </div>
+
+                  <button
+                    onClick={() => onAddToCart(product, quantity)}
+                    className="flex-1 py-3.5 px-6 rounded-full bg-terracotta text-white text-xs font-semibold hover:bg-terracotta-hover transition-colors shadow-md text-center"
+                  >
+                    Add to Cart • {fmt(product.price * quantity)}
+                  </button>
+                </div>
+              </div>
+
+              {/* Accordions / Tabs */}
+              <div className="mt-10 border-t border-taupe pt-6">
+                <div className="flex gap-6 border-b border-taupe/60 pb-2 text-xs font-medium">
+                  <button onClick={() => setActiveTab('materials')} className={`pb-2 transition-colors ${activeTab === 'materials' ? 'border-b-2 border-terracotta text-terracotta font-semibold' : 'text-charcoal-muted'}`}>
+                    Materials & Care
+                  </button>
+                  <button onClick={() => setActiveTab('dimensions')} className={`pb-2 transition-colors ${activeTab === 'dimensions' ? 'border-b-2 border-terracotta text-terracotta font-semibold' : 'text-charcoal-muted'}`}>
+                    Dimensions
+                  </button>
+                  <button onClick={() => setActiveTab('delivery')} className={`pb-2 transition-colors ${activeTab === 'delivery' ? 'border-b-2 border-terracotta text-terracotta font-semibold' : 'text-charcoal-muted'}`}>
+                    Delivery & Returns
+                  </button>
+                </div>
+
+                <div className="py-4 text-xs text-charcoal-muted leading-relaxed">
+                  {activeTab === 'materials' && <p>{product.materials}</p>}
+                  {activeTab === 'dimensions' && <p>{product.dimensions} (Weight: {product.weight})</p>}
+                  {activeTab === 'delivery' && <p>Complimentary White Glove delivery included. Assembled directly in your chosen room by our logistics team.</p>}
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {/* You May Also Like Section */}
+          {relatedProducts.length > 0 && (
+            <div className="mt-16 pt-12 border-t border-taupe">
+              <h3 className="font-serif text-2xl font-medium mb-6">Complete the Sanctuary</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                {relatedProducts.map(rel => (
+                  <ProductCard 
+                    key={rel.id}
+                    product={rel}
+                    isWishlisted={wishlist.includes(rel.id)}
+                    onToggleWishlist={onToggleWishlist}
+                    onOpenDetail={onOpenProduct}
+                    onAddToCart={onAddToCart}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+        </div>
+      );
+    }
+
+    // --- REUSABLE TRUST & VALUES SECTION ---
+    function TrustSection() {
+      const { fmt } = useMoney();
+      return (
+        <section className="bg-sand/60 border-y border-taupe/60 py-12">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="flex items-start gap-4">
+                <IconTruck />
+                <div>
+                  <h4 className="text-sm font-semibold text-charcoal">Free White-Glove Shipping</h4>
+                  <p className="text-xs text-charcoal-muted mt-1 leading-relaxed">Delivered, unboxed, and assembled in your home on orders over {fmt(FREE_DELIVERY_USD)}.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <IconRefresh />
+                <div>
+                  <h4 className="text-sm font-semibold text-charcoal">30-Day Calm Trial</h4>
+                  <p className="text-xs text-charcoal-muted mt-1 leading-relaxed">Experience the furniture in your space for a full month before deciding.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <IconShield />
+                <div>
+                  <h4 className="text-sm font-semibold text-charcoal">10-Year Craft Guarantee</h4>
+                  <p className="text-xs text-charcoal-muted mt-1 leading-relaxed">Built from kiln-dried solid woods engineered to last generations.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <IconLeaf />
+                <div>
+                  <h4 className="text-sm font-semibold text-charcoal">Sustainable Craftsmanship</h4>
+                  <p className="text-xs text-charcoal-muted mt-1 leading-relaxed">FSC-certified timber and zero-VOC natural oil finishes.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // ============================================================
+    //  COZY WEATHER: live weather for any city + matching furniture
+    // ============================================================
+    function WeatherPage({ renderCard, onNavigate }) {
+      const [query, setQuery] = useState('');
+      const [place, setPlace] = useState(null);   // { name, country, lat, lon }
+      const [data, setData] = useState(null);
+      const [status, setStatus] = useState('loading'); // 'loading' | 'ready' | 'error'
+      const [errorMsg, setErrorMsg] = useState('');
+      const [unit, setUnit] = useState('C');
+
+      const CITY_CHIPS = ['Seoul', 'Moscow', 'London', 'New York', 'Tokyo', 'Paris'];
+
+      const loadForecast = async (p) => {
+        try {
+          const url = 'https://api.open-meteo.com/v1/forecast'
+            + `?latitude=${p.lat}&longitude=${p.lon}`
+            + '&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,is_day'
+            + '&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=5';
+          const res = await fetch(url);
+          if (!res.ok) throw new Error('forecast failed');
+          const json = await res.json();
+          setPlace(p);
+          setData(json);
+          setStatus('ready');
+        } catch (e) {
+          setStatus('error');
+          setErrorMsg('We could not reach the weather service. Please check your connection and try again.');
+        }
+      };
+
+      const searchCity = async (name) => {
+        const q = (name !== undefined ? name : query).trim();
+        if (!q) return;
+        setStatus('loading');
+        setErrorMsg('');
+        try {
+          const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=1&language=en&format=json`);
+          if (!res.ok) throw new Error('geocoding failed');
+          const json = await res.json();
+          if (!json.results || json.results.length === 0) {
+            setStatus('error');
+            setErrorMsg(`We could not find "${q}". Try the spelling in English or a larger nearby city.`);
+            return;
+          }
+          const r = json.results[0];
+          await loadForecast({ name: r.name, country: r.country || '', lat: r.latitude, lon: r.longitude });
+        } catch (e) {
+          setStatus('error');
+          setErrorMsg('We could not reach the weather service. Please check your connection and try again.');
+        }
+      };
+
+      const useMyLocation = () => {
+        if (!navigator.geolocation) {
+          setStatus('error');
+          setErrorMsg('Your browser does not support location. Please type a city instead.');
+          return;
+        }
+        setStatus('loading');
+        navigator.geolocation.getCurrentPosition(
+          (pos) => loadForecast({ name: 'Your location', country: '', lat: pos.coords.latitude, lon: pos.coords.longitude }),
+          () => { setStatus('error'); setErrorMsg('Location permission was not given. Please type a city instead.'); },
+          { timeout: 10000 }
+        );
+      };
+
+      useEffect(() => { searchCity('London'); }, []);
+
+      const temp = (c) => unit === 'C' ? Math.round(c) : Math.round(c * 9 / 5 + 32);
+
+      const current = data && data.current;
+      const info = current ? describeWeather(current.weather_code, current.is_day) : null;
+      const advice = current ? cozyAdvice({ feelsC: current.apparent_temperature, code: current.weather_code, isDay: current.is_day }) : null;
+      const picks = advice ? advice.ids.map(id => PRODUCTS.find(p => p.id === id)).filter(Boolean) : [];
+
+      return (
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 animate-fadeIn">
+          <nav className="text-xs text-charcoal-muted mb-4 flex items-center gap-2">
+            <button onClick={() => onNavigate('home')} className="hover:underline">Home</button>
+            <span>/</span>
+            <span className="text-charcoal font-medium">Cozy Weather</span>
+          </nav>
+
+          <div className="max-w-2xl">
+            <span className="text-xs font-semibold text-terracotta uppercase tracking-wider">Live weather</span>
+            <h1 className="font-serif text-3xl sm:text-5xl font-medium mt-1 leading-tight">What does today's weather ask for?</h1>
+            <p className="text-sm text-charcoal-muted mt-3 leading-relaxed">
+              Type any city in the world. We read the weather there right now and suggest the furniture that suits the day.
+            </p>
+          </div>
+
+          {/* Search */}
+          <form
+            onSubmit={(e) => { e.preventDefault(); searchCity(); }}
+            className="mt-6 flex flex-col sm:flex-row gap-3 max-w-2xl"
+          >
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search a city, e.g. Busan, Berlin, Dubai…"
+              aria-label="City name"
+              className="flex-1 bg-sand border border-taupe rounded-full px-5 py-3 text-sm focus:outline-none focus:border-terracotta"
+            />
+            <div className="flex gap-3">
+              <button type="submit" className="px-6 py-3 rounded-full bg-terracotta text-white text-xs font-semibold hover:bg-terracotta-hover transition-colors shadow-md">
+                Check weather
+              </button>
+              <button type="button" onClick={useMyLocation} className="px-4 py-3 rounded-full border border-taupe bg-sand text-xs font-semibold hover:border-terracotta transition-colors" title="Use my current location">
+                📍 My location
+              </button>
+            </div>
+          </form>
+
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            {CITY_CHIPS.map(city => (
+              <button
+                key={city}
+                onClick={() => { setQuery(city); searchCity(city); }}
+                className="px-3.5 py-1.5 rounded-full bg-sand text-xs font-medium hover:bg-taupe/50 transition-colors"
+              >
+                {city}
+              </button>
+            ))}
+            <span className="flex-1"></span>
+            <div className="flex rounded-full border border-taupe overflow-hidden text-xs font-semibold" role="group" aria-label="Temperature unit">
+              <button onClick={() => setUnit('C')} className={`px-3 py-1.5 ${unit === 'C' ? 'bg-terracotta text-white' : 'bg-sand'}`}>°C</button>
+              <button onClick={() => setUnit('F')} className={`px-3 py-1.5 ${unit === 'F' ? 'bg-terracotta text-white' : 'bg-sand'}`}>°F</button>
+            </div>
+          </div>
+
+          {/* States */}
+          {status === 'loading' && (
+            <div className="mt-8 rounded-3xl bg-sand border border-taupe/60 p-10 text-center text-sm text-charcoal-muted animate-pulse">
+              Looking up the sky…
+            </div>
+          )}
+
+          {status === 'error' && (
+            <div className="mt-8 rounded-3xl bg-sand border border-terracotta/40 p-8 text-center">
+              <p className="text-sm text-charcoal">{errorMsg}</p>
+              <button onClick={() => searchCity('London')} className="mt-3 text-xs font-semibold text-terracotta underline">Try London instead</button>
+            </div>
+          )}
+
+          {status === 'ready' && current && (
+            <div className="mt-8 animate-fadeIn">
+              {/* Current conditions */}
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                <div className="lg:col-span-3 rounded-3xl bg-sand border border-taupe/60 p-6 sm:p-8 shadow-cozy">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-xs uppercase tracking-wider font-semibold text-charcoal-muted">Right now in</p>
+                      <h2 className="font-serif text-2xl sm:text-3xl font-medium">{place.name}{place.country ? `, ${place.country}` : ''}</h2>
+                    </div>
+                    <span className="text-5xl sm:text-6xl" aria-hidden="true">{info.icon}</span>
+                  </div>
+
+                  <div className="mt-4 flex items-end gap-4">
+                    <span className="font-serif text-6xl sm:text-7xl font-medium leading-none">{temp(current.temperature_2m)}°</span>
+                    <div className="pb-1">
+                      <p className="text-base font-medium">{info.label}</p>
+                      <p className="text-xs text-charcoal-muted">Feels like {temp(current.apparent_temperature)}°{unit}</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 grid grid-cols-3 gap-3 text-center">
+                    <div className="rounded-2xl bg-cream border border-taupe/40 py-3">
+                      <p className="text-[11px] text-charcoal-muted">Humidity</p>
+                      <p className="text-sm font-semibold">{current.relative_humidity_2m}%</p>
+                    </div>
+                    <div className="rounded-2xl bg-cream border border-taupe/40 py-3">
+                      <p className="text-[11px] text-charcoal-muted">Wind</p>
+                      <p className="text-sm font-semibold">{Math.round(current.wind_speed_10m)} km/h</p>
+                    </div>
+                    <div className="rounded-2xl bg-cream border border-taupe/40 py-3">
+                      <p className="text-[11px] text-charcoal-muted">Today</p>
+                      <p className="text-sm font-semibold">{temp(data.daily.temperature_2m_min[0])}° / {temp(data.daily.temperature_2m_max[0])}°</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Cozy index */}
+                <div className="lg:col-span-2 rounded-3xl bg-terracotta-soft border border-terracotta/30 p-6 sm:p-8 flex flex-col justify-between">
+                  <div>
+                    <p className="text-xs uppercase tracking-wider font-semibold text-terracotta">Cozy index</p>
+                    <p className="font-serif text-5xl font-medium mt-1">{advice.score}<span className="text-xl text-charcoal-muted">/100</span></p>
+                    <div className="h-2 rounded-full bg-cream/80 overflow-hidden mt-3">
+                      <div className="h-full bg-terracotta rounded-full transition-all duration-700" style={{ width: `${advice.score}%` }}></div>
+                    </div>
+                  </div>
+                  <div className="mt-5">
+                    <h3 className="font-serif text-xl font-medium leading-snug">{advice.title}</h3>
+                    <p className="text-xs text-charcoal-muted leading-relaxed mt-2">{advice.text}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 5-day forecast */}
+              <div className="mt-6 grid grid-cols-5 gap-2 sm:gap-3">
+                {data.daily.time.map((day, i) => {
+                  const d = describeWeather(data.daily.weather_code[i], 1);
+                  const label = i === 0 ? 'Today' : new Date(day + 'T12:00:00').toLocaleDateString(undefined, { weekday: 'short' });
+                  return (
+                    <div key={day} className="rounded-2xl bg-sand border border-taupe/50 py-3 px-1 text-center">
+                      <p className="text-[11px] font-semibold text-charcoal-muted">{label}</p>
+                      <p className="text-2xl my-1" aria-hidden="true">{d.icon}</p>
+                      <p className="text-xs font-semibold">{temp(data.daily.temperature_2m_max[i])}°</p>
+                      <p className="text-[11px] text-charcoal-muted">{temp(data.daily.temperature_2m_min[i])}°</p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Matching furniture */}
+              <div className="mt-12">
+                <h3 className="font-serif text-2xl font-medium">Picked for {place.name === 'Your location' ? 'your weather' : place.name + ' today'}</h3>
+                <p className="text-xs text-charcoal-muted mt-1 mb-6">Matched to the temperature and sky right now.</p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                  {picks.map(p => renderCard(p))}
+                </div>
+              </div>
+
+              <p className="text-[11px] text-charcoal-light mt-8">Weather data by Open-Meteo.com</p>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ============================================================
+    //  STYLE QUIZ: four questions, three matched pieces
+    // ============================================================
+    function StyleQuiz({ renderCard, onAddToCart, onNavigate }) {
+      const { fmt } = useMoney();
+      const [step, setStep] = useState(0);
+      const [answers, setAnswers] = useState({});
+
+      const QUESTIONS = [
+        { id: 'room', q: 'Which room are you creating?', options: [
+          { v: 'living', label: 'Living room', icon: '🛋️' },
+          { v: 'bedroom', label: 'Bedroom', icon: '🛏️' },
+          { v: 'dining', label: 'Dining area', icon: '🍽️' },
+          { v: 'any', label: 'A little of everything', icon: '🏡' },
+        ] },
+        { id: 'mood', q: 'How should it feel?', options: [
+          { v: 'warm', label: 'Warm and enveloping', icon: '🕯️' },
+          { v: 'airy', label: 'Light and airy', icon: '🌿' },
+          { v: 'earthy', label: 'Earthy and natural', icon: '🍂' },
+          { v: 'sculpt', label: 'Quiet and sculptural', icon: '🏺' },
+        ] },
+        { id: 'mat', q: 'Which materials are you drawn to?', options: [
+          { v: 'fabric', label: 'Soft fabrics', icon: '🧶' },
+          { v: 'wood', label: 'Natural wood', icon: '🪵' },
+          { v: 'stone', label: 'Stone and ceramic', icon: '🪨' },
+          { v: 'any', label: 'A mix of everything', icon: '✨' },
+        ] },
+        { id: 'budget', q: 'What is your budget for one piece?', options: [
+          { v: 500, label: `Up to ${fmt(500)}`, icon: '🌱' },
+          { v: 1500, label: `Up to ${fmt(1500)}`, icon: '🌳' },
+          { v: 99999, label: 'No limit, show me the best', icon: '💎' },
+        ] },
+      ];
+
+      const ROOM_NAMES = { living: 'living room', bedroom: 'bedroom', dining: 'dining area' };
+      const MOOD_NAMES = { warm: 'warm', airy: 'light and airy', earthy: 'earthy', sculpt: 'quiet and sculptural' };
+      const MAT_NAMES = { fabric: 'soft fabric', wood: 'natural wood', stone: 'stone and ceramic' };
+
+      const choose = (id, v) => {
+        const next = { ...answers, [id]: v };
+        setAnswers(next);
+        setTimeout(() => setStep(s => s + 1), 220);
+      };
+
+      const results = useMemo(() => {
+        if (step < QUESTIONS.length) return [];
+        const a = answers;
+        const maxScore = (a.room === 'any' ? 1 : 4) + 3 + (a.mat === 'any' ? 1 : 2) + 3;
+        return PRODUCTS.map(p => {
+          const t = PRODUCT_TRAITS[p.id];
+          let s = 0;
+          const why = [];
+          if (a.room === 'any') s += 1;
+          else if (t.rooms.includes(a.room)) { s += 4; why.push(`suits your ${ROOM_NAMES[a.room]}`); }
+          if (t.moods.includes(a.mood)) { s += 3; why.push(`has a ${MOOD_NAMES[a.mood]} feel`); }
+          if (a.mat === 'any') s += 1;
+          else if (t.mats.includes(a.mat)) { s += 2; why.push(`made with ${MAT_NAMES[a.mat]}`); }
+          if (p.price <= a.budget) { s += 3; if (a.budget < 99999) why.push('fits your budget'); }
+          else s -= 4;
+          const pct = Math.max(30, Math.min(98, Math.round((s / maxScore) * 100)));
+          return { product: p, score: s, pct, why };
+        }).sort((x, y) => y.score - x.score || y.product.rating - x.product.rating).slice(0, 3);
+      }, [step, answers]);
+
+      const restart = () => { setStep(0); setAnswers({}); };
+      const done = step >= QUESTIONS.length;
+      const current = QUESTIONS[Math.min(step, QUESTIONS.length - 1)];
+      const total = results.reduce((sum, r) => sum + r.product.price, 0);
+
+      return (
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 animate-fadeIn">
+          <nav className="text-xs text-charcoal-muted mb-4 flex items-center gap-2">
+            <button onClick={() => onNavigate('home')} className="hover:underline">Home</button>
+            <span>/</span>
+            <span className="text-charcoal font-medium">Find Your Sanctuary</span>
+          </nav>
+
+          {!done && (
+            <div className="max-w-2xl mx-auto text-center">
+              <span className="text-xs font-semibold text-terracotta uppercase tracking-wider">Style quiz · question {step + 1} of {QUESTIONS.length}</span>
+              <div className="h-1.5 rounded-full bg-taupe overflow-hidden mt-3 mb-8">
+                <div className="h-full bg-terracotta transition-all duration-500" style={{ width: `${(step / QUESTIONS.length) * 100}%` }}></div>
+              </div>
+
+              <h1 key={current.id} className="font-serif text-3xl sm:text-4xl font-medium animate-fadeIn">{current.q}</h1>
+
+              <div key={current.id + '-opts'} className={`mt-8 grid gap-3 animate-fadeIn ${current.options.length === 3 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2'}`}>
+                {current.options.map(opt => (
+                  <button
+                    key={String(opt.v)}
+                    onClick={() => choose(current.id, opt.v)}
+                    className={`flex items-center gap-4 text-left rounded-2xl border p-5 transition-all hover:border-terracotta hover:shadow-cozy ${answers[current.id] === opt.v ? 'border-terracotta bg-terracotta-soft' : 'border-taupe bg-sand'}`}
+                  >
+                    <span className="text-3xl" aria-hidden="true">{opt.icon}</span>
+                    <span className="text-sm font-semibold">{opt.label}</span>
+                  </button>
+                ))}
+              </div>
+
+              {step > 0 && (
+                <button onClick={() => setStep(step - 1)} className="mt-6 text-xs font-semibold text-charcoal-muted hover:text-terracotta">&larr; Back</button>
+              )}
+            </div>
+          )}
+
+          {done && (
+            <div className="animate-fadeIn">
+              <div className="text-center max-w-xl mx-auto">
+                <span className="text-xs font-semibold text-terracotta uppercase tracking-wider">Your sanctuary</span>
+                <h1 className="font-serif text-3xl sm:text-5xl font-medium mt-1">Three pieces made for you</h1>
+                <p className="text-sm text-charcoal-muted mt-3">Ranked by how well they match your answers.</p>
+              </div>
+
+              <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-6">
+                {results.map((r, i) => (
+                  <div key={r.product.id} className="flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-terracotta">#{i + 1} pick</span>
+                      <span className="text-xs font-semibold bg-olive-soft text-olive rounded-full px-2.5 py-1">{r.pct}% match</span>
+                    </div>
+                    {renderCard(r.product)}
+                    <p className="text-[11px] text-charcoal-muted leading-relaxed px-1">
+                      {r.why.length ? 'Why: it ' + r.why.join(', ') + '.' : 'A flexible piece that works with most rooms.'}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-10 rounded-3xl bg-sand border border-taupe/60 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                  <p className="font-serif text-xl font-medium">The complete set</p>
+                  <p className="text-xs text-charcoal-muted">All three together: {fmt(total)}</p>
+                </div>
+                <div className="flex gap-3">
+                  <button onClick={restart} className="px-5 py-3 rounded-full border border-taupe text-xs font-semibold hover:border-terracotta transition-colors">Retake quiz</button>
+                  <button
+                    onClick={() => results.forEach(r => onAddToCart(r.product, 1))}
+                    className="px-6 py-3 rounded-full bg-terracotta text-white text-xs font-semibold hover:bg-terracotta-hover transition-colors shadow-md"
+                  >
+                    Add all three to cart
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ============================================================
+    //  ROOM PLANNER: does it fit? a to-scale floor plan
+    // ============================================================
+    function RoomPlanner({ onAddToCart, onOpenDetail, onNavigate }) {
+      const { fmt } = useMoney();
+      const [productId, setProductId] = useState('p1');
+      const [widthM, setWidthM] = useState(4.5);
+      const [lengthM, setLengthM] = useState(3.8);
+
+      const PRESETS = [
+        { label: 'Cozy bedroom', w: 3.2, l: 3.4 },
+        { label: 'Living room', w: 5.0, l: 4.0 },
+        { label: 'Open plan', w: 6.5, l: 5.0 },
+      ];
+      const plannable = PRODUCTS.filter(p => FOOTPRINTS[p.id]);
+      const product = PRODUCTS.find(p => p.id === productId);
+      const fp = FOOTPRINTS[productId];
+
+      const W = Math.round(widthM * 100);
+      const L = Math.round(lengthM * 100);
+
+      // Try the piece both ways round and keep the roomier option
+      const plan = useMemo(() => {
+        const options = [{ w: fp.w, d: fp.d, rotated: false }, { w: fp.d, d: fp.w, rotated: true }].map(o => {
+          const fits = o.w <= W && o.d <= L;
+          let margin;
+          if (fp.place === 'wall') margin = L - o.d;
+          else if (fp.place === 'center') margin = Math.min((W - o.w) / 2, (L - o.d) / 2);
+          else margin = Math.min((W - o.w) / 2, L - o.d);
+          return { ...o, fits, margin };
+        });
+        const fitting = options.filter(o => o.fits).sort((a, b) => b.margin - a.margin);
+        const best = fitting[0] || options[0];
+        let status;
+        if (!best.fits) status = 'no';
+        else if (best.margin >= fp.need) status = 'good';
+        else if (best.margin >= fp.need * 0.6) status = 'tight';
+        else status = 'cramped';
+        const x = (W - best.w) / 2;
+        const y = fp.place === 'center' ? (L - best.d) / 2 : 0;
+        return { ...best, status, x, y };
+      }, [productId, W, L]);
+
+      const STATUS = {
+        good:    { label: 'Fits comfortably', color: '#707A5E', icon: '✅' },
+        tight:   { label: 'Fits, but it will be snug', color: '#C9962B', icon: '🟡' },
+        cramped: { label: 'Fits, but very cramped', color: '#C86D51', icon: '🟠' },
+        no:      { label: 'Too big for this room', color: '#B5483A', icon: '⛔' },
+      };
+      const st = STATUS[plan.status];
+
+      const floorUsed = Math.round(((plan.w * plan.d) / (W * L)) * 100);
+      const margin = Math.max(0, Math.round(plan.margin));
+
+      let message;
+      if (plan.status === 'no') {
+        message = `${product.name} needs ${fp.w} × ${fp.d} cm of floor. Your room is ${W} × ${L} cm, so it will not fit. Try a larger room or a smaller piece.`;
+      } else {
+        message = `You will have about ${margin} cm of free space ${fp.hint}${plan.status === 'good' ? ', which is plenty.' : `. We recommend at least ${fp.need} cm.`}${plan.rotated ? ' We turned it 90° so it fits better.' : ''}`;
+      }
+
+      // Drawing (units are centimetres)
+      const pad = 60;
+      const cw = Math.max(W, plan.w);
+      const ch = Math.max(L, plan.d);
+      const fs = Math.max(cw, ch) / 28;
+      const need = fp.need;
+      let zone;
+      if (fp.place === 'wall') zone = { x: plan.x, y: plan.d, w: plan.w, h: need };
+      else if (fp.place === 'center') zone = { x: plan.x - need, y: plan.y - need, w: plan.w + need * 2, h: plan.d + need * 2 };
+      else zone = { x: plan.x - need, y: 0, w: plan.w + need * 2, h: plan.d + need };
+
+      const gridX = []; for (let gx = 100; gx < W; gx += 100) gridX.push(gx);
+      const gridY = []; for (let gy = 100; gy < L; gy += 100) gridY.push(gy);
+
+      return (
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 animate-fadeIn">
+          <nav className="text-xs text-charcoal-muted mb-4 flex items-center gap-2">
+            <button onClick={() => onNavigate('home')} className="hover:underline">Home</button>
+            <span>/</span>
+            <span className="text-charcoal font-medium">Room Planner</span>
+          </nav>
+
+          <div className="max-w-2xl">
+            <span className="text-xs font-semibold text-terracotta uppercase tracking-wider">Will it fit?</span>
+            <h1 className="font-serif text-3xl sm:text-5xl font-medium mt-1 leading-tight">See it in your room before you buy</h1>
+            <p className="text-sm text-charcoal-muted mt-3 leading-relaxed">
+              Choose a piece, set the size of your room, and we draw it to scale, including the space you need to walk around it.
+            </p>
+          </div>
+
+          <div className="mt-8 grid grid-cols-1 lg:grid-cols-5 gap-8">
+            {/* Controls */}
+            <div className="lg:col-span-2 space-y-6">
+              <div>
+                <h2 className="text-xs font-semibold uppercase tracking-wider text-charcoal-muted mb-3">1 · Choose a piece</h2>
+                <div className="grid grid-cols-1 gap-2">
+                  {plannable.map(p => (
+                    <button
+                      key={p.id}
+                      onClick={() => setProductId(p.id)}
+                      className={`flex items-center gap-3 text-left rounded-2xl border p-2.5 transition-all ${productId === p.id ? 'border-terracotta bg-terracotta-soft' : 'border-taupe bg-sand hover:border-terracotta/50'}`}
+                    >
+                      <img src={p.primaryImg} alt="" className="w-12 h-12 rounded-xl object-cover" />
+                      <span className="flex-1">
+                        <span className="block text-xs font-semibold leading-snug">{p.name}</span>
+                        <span className="block text-[11px] text-charcoal-muted">{FOOTPRINTS[p.id].w} × {FOOTPRINTS[p.id].d} cm</span>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h2 className="text-xs font-semibold uppercase tracking-wider text-charcoal-muted mb-3">2 · Your room size</h2>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {PRESETS.map(pr => (
+                    <button
+                      key={pr.label}
+                      onClick={() => { setWidthM(pr.w); setLengthM(pr.l); }}
+                      className="px-3.5 py-1.5 rounded-full bg-sand text-xs font-medium hover:bg-taupe/50 transition-colors"
+                    >
+                      {pr.label}
+                    </button>
+                  ))}
+                </div>
+                <label className="block text-xs font-medium mb-1">Width: <strong>{widthM.toFixed(1)} m</strong></label>
+                <input type="range" min="2" max="8" step="0.1" value={widthM} onChange={(e) => setWidthM(parseFloat(e.target.value))} className="w-full mb-4" />
+                <label className="block text-xs font-medium mb-1">Length: <strong>{lengthM.toFixed(1)} m</strong></label>
+                <input type="range" min="2" max="8" step="0.1" value={lengthM} onChange={(e) => setLengthM(parseFloat(e.target.value))} className="w-full" />
+              </div>
+            </div>
+
+            {/* Floor plan */}
+            <div className="lg:col-span-3">
+              <div className="rounded-3xl bg-sand border border-taupe/60 p-4 sm:p-6 shadow-cozy">
+                <svg viewBox={`${-pad} ${-pad} ${cw + pad * 2} ${ch + pad * 2}`} className="w-full h-auto" role="img" aria-label={`Floor plan of a ${widthM.toFixed(1)} by ${lengthM.toFixed(1)} metre room with ${product.name}`} style={{ maxHeight: '460px' }}>
+                  {/* room */}
+                  <rect x="0" y="0" width={W} height={L} style={{ fill: 'rgb(var(--c-cream))', stroke: 'rgb(var(--c-charcoal))' }} strokeWidth="3" vectorEffect="non-scaling-stroke" />
+                  {gridX.map(gx => <line key={'gx' + gx} x1={gx} y1="0" x2={gx} y2={L} style={{ stroke: 'rgb(var(--c-taupe))' }} strokeWidth="1" vectorEffect="non-scaling-stroke" />)}
+                  {gridY.map(gy => <line key={'gy' + gy} x1="0" y1={gy} x2={W} y2={gy} style={{ stroke: 'rgb(var(--c-taupe))' }} strokeWidth="1" vectorEffect="non-scaling-stroke" />)}
+
+                  {/* walking space */}
+                  {plan.status !== 'no' && (
+                    <rect
+                      x={Math.max(0, zone.x)} y={Math.max(0, zone.y)}
+                      width={Math.min(W, zone.x + zone.w) - Math.max(0, zone.x)}
+                      height={Math.min(L, zone.y + zone.h) - Math.max(0, zone.y)}
+                      fill={st.color} fillOpacity="0.1" stroke={st.color} strokeDasharray="6 5" strokeWidth="1.5" vectorEffect="non-scaling-stroke" rx="6"
+                    />
+                  )}
+
+                  {/* the piece */}
+                  <rect x={plan.x} y={plan.y} width={plan.w} height={plan.d} rx="8" fill={st.color} fillOpacity="0.85" stroke={st.color} strokeWidth="2" vectorEffect="non-scaling-stroke" />
+                  <text x={plan.x + plan.w / 2} y={plan.y + plan.d / 2} textAnchor="middle" dominantBaseline="middle" fontSize={fs} fontWeight="600" fill="#fff">
+                    {plan.w} × {plan.d} cm
+                  </text>
+
+                  {/* dimension labels */}
+                  <text x={cw / 2} y={-pad / 2.4} textAnchor="middle" fontSize={fs} style={{ fill: 'rgb(var(--c-charcoal-muted))' }}>{widthM.toFixed(1)} m</text>
+                  <text x={-pad / 2.2} y={ch / 2} textAnchor="middle" fontSize={fs} transform={`rotate(-90 ${-pad / 2.2} ${ch / 2})`} style={{ fill: 'rgb(var(--c-charcoal-muted))' }}>{lengthM.toFixed(1)} m</text>
+                </svg>
+                <p className="text-[11px] text-charcoal-muted text-center mt-2">Each grid square is 1 m × 1 m. Dashed area = space to walk.</p>
+              </div>
+
+              {/* Verdict */}
+              <div className="mt-5 rounded-3xl border p-5 sm:p-6" style={{ borderColor: st.color + '66', background: st.color + '14' }}>
+                <p className="font-serif text-xl font-medium flex items-center gap-2"><span aria-hidden="true">{st.icon}</span> {st.label}</p>
+                <p className="text-xs sm:text-sm text-charcoal-muted leading-relaxed mt-2">{message}</p>
+                <p className="text-xs text-charcoal-muted mt-1">The piece takes up about {floorUsed}% of your floor.</p>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <button
+                    onClick={() => onAddToCart(product, 1)}
+                    className="px-6 py-3 rounded-full bg-terracotta text-white text-xs font-semibold hover:bg-terracotta-hover transition-colors shadow-md"
+                  >
+                    Add to cart · {fmt(product.price)}
+                  </button>
+                  <button
+                    onClick={() => onOpenDetail(productId)}
+                    className="px-5 py-3 rounded-full border border-taupe text-xs font-semibold hover:border-terracotta transition-colors"
+                  >
+                    View details
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Render App
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
