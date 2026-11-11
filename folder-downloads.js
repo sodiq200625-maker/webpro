@@ -1,7 +1,7 @@
-const repository = 'roziboyahmadaliyev1310-sy/web-programming';
+const repository = 'sodiq200625-maker/webpro';
 const branch = 'main';
 const submoduleRepositories = {
-  'group project/test': 'roziboyahmadaliyev1310-sy/test',
+    'group project/test': 'sodiq200625-maker/webpro',
 };
 const statusMessage = document.getElementById('download-status');
 
