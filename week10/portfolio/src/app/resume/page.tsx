@@ -23,7 +23,7 @@ export default function ResumePage() {
 
       <article className="resume-sheet">
         <header>
-          <p className="eyebrow">MIDNIGHT OBSERVATORY · FIELD GUIDE</p>
+          <p className="eyebrow">RESUME</p>
           <h1>{profile.name}</h1>
           <p className="resume-role">{profile.role}</p>
           <div className="resume-contact">
@@ -74,11 +74,6 @@ export default function ResumePage() {
           </ul>
         </section>
 
-        <p className="resume-note">
-          This snapshot is generated from projects documented in the Midnight
-          Observatory portfolio. Certificate and contact details are not
-          included unless verified.
-        </p>
       </article>
     </main>
   );

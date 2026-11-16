@@ -3,9 +3,9 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Muhammadsodik — Midnight Observatory",
+  title: "Muhammadsodik | Portfolio",
   description:
-    "A portfolio of web projects, API experiments, and the skills built along the way.",
+    "Computer Engineering student portfolio featuring web projects and skills.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

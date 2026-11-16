@@ -4,10 +4,8 @@ import Image from "next/image";
 import {
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
-  type KeyboardEvent,
 } from "react";
 import {
   siGithub,
@@ -20,19 +18,38 @@ import {
 } from "simple-icons";
 import { certifications } from "@/data/certifications";
 import { profile } from "@/data/profile";
-import { projects, type ProjectId } from "@/data/projects";
+import { projects } from "@/data/projects";
 import { skillCategories, skills, type SkillCategory } from "@/data/skills";
-import { terminalCommands, type TerminalCommand } from "@/data/terminal-commands";
-import { timeline } from "@/data/timeline";
+
+type IconName =
+  | "about"
+  | "skills"
+  | "projects"
+  | "resume"
+  | "contact"
+  | "certificate"
+  | "book"
+  | "code"
+  | "sun"
+  | "moon"
+  | "arrow"
+  | "external";
+
+const primaryNavigation = [
+  { id: "about", label: "About", icon: "about" },
+  { id: "skills", label: "Skills", icon: "skills" },
+  { id: "projects", label: "Projects", icon: "projects" },
+  { id: "resume", label: "Resume", icon: "resume" },
+  { id: "contact", label: "Contact", icon: "contact" },
+] as const;
 
 const navigation = [
-  { id: "about", label: "About", symbol: "◎" },
-  { id: "skills", label: "Skills", symbol: "✧" },
-  { id: "certifications", label: "Certifications", symbol: "◇" },
-  { id: "projects", label: "Projects", symbol: "✦" },
-  { id: "resume", label: "Resume", symbol: "▤" },
-  { id: "contact", label: "Contact", symbol: "↗" },
-] as const;
+  ...primaryNavigation.slice(0, 3),
+  ...(certifications.length > 0
+    ? [{ id: "certifications", label: "Certificates", icon: "certificate" as const }]
+    : []),
+  ...primaryNavigation.slice(3),
+] satisfies ReadonlyArray<{ id: string; label: string; icon: IconName }>;
 
 const brandIcons: Record<string, SimpleIcon> = {
   "html-css": siHtml5,
@@ -44,44 +61,52 @@ const brandIcons: Record<string, SimpleIcon> = {
 };
 
 type Theme = "night" | "daybreak";
-type Connector = { projectId: ProjectId; path: string };
 
-function Counter({
-  value,
-  suffix = "",
+const iconPaths: Record<IconName, string[]> = {
+  about: ["M20 21a8 8 0 0 0-16 0", "M12 13a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"],
+  skills: ["M12 3v18", "M3 12h18", "m5.6 5.6 12.8 12.8", "m18.4 5.6L5.6 18.4"],
+  projects: ["M3 7h18v13H3z", "m3 7 2-4h14l2 4"],
+  resume: ["M7 3h7l4 4v14H7z", "M14 3v5h5", "M10 13h5", "M10 17h5"],
+  contact: ["M3 5h18v14H3z", "m3 6 9 7 9-7"],
+  certificate: ["m12 3 8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4Z", "m9 12 2 2 4-4"],
+  book: ["M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22z", "M4 5.5v14", "M8 7h8"],
+  code: ["m8 8-4 4 4 4", "m16 8 4 4-4 4", "m14 5-4 14"],
+  sun: ["M12 3v2", "M12 19v2", "m4.2 4.2 1.4 1.4", "m18.4 18.4 1.4 1.4", "M3 12h2", "M19 12h2", "m4.2 19.8 1.4-1.4", "m18.4 5.6 1.4-1.4", "M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"],
+  moon: ["M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5a8.5 8.5 0 1 0 12 12Z"],
+  arrow: ["M7 17 17 7", "M8 7h9v9"],
+  external: ["M14 4h6v6", "m20 4-9 9", "M18 13v6H5V6h6"],
+};
+
+const projectIcons: Record<(typeof projects)[number]["visual"], IconName> = {
+  atlas: "projects",
+  books: "book",
+  api: "code",
+  stars: "about",
+};
+
+function Icon({
+  name,
+  className = "ui-icon",
 }: {
-  value: number | null;
-  suffix?: string;
+  name: IconName;
+  className?: string;
 }) {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    if (value === null) return;
-
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    let frame = 0;
-    if (reducedMotion) {
-      frame = requestAnimationFrame(() => setCount(value));
-      return () => cancelAnimationFrame(frame);
-    }
-
-    const start = performance.now();
-    const duration = 950;
-
-    const update = (now: number) => {
-      const progress = Math.min((now - start) / duration, 1);
-      const eased = 1 - (1 - progress) ** 3;
-      setCount(Math.round(value * eased));
-      if (progress < 1) frame = requestAnimationFrame(update);
-    };
-
-    frame = requestAnimationFrame(update);
-    return () => cancelAnimationFrame(frame);
-  }, [value]);
-
-  return <>{value === null ? "—" : `${count}${suffix}`}</>;
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {iconPaths[name].map((path) => (
+        <path key={path} d={path} />
+      ))}
+    </svg>
+  );
 }
 
 function SkillMark({ skillId, mark }: { skillId: string; mark: string }) {
@@ -103,36 +128,13 @@ function SkillMark({ skillId, mark }: { skillId: string; mark: string }) {
 
 function ProjectCard({
   project,
-  active,
-  setCardRef,
 }: {
   project: (typeof projects)[number];
-  active: boolean;
-  setCardRef: (id: ProjectId, node: HTMLElement | null) => void;
 }) {
   return (
-    <article
-      className={`project-card project-card--${project.visual}${active ? " is-connected" : ""}`}
-      id={`project-${project.id}`}
-      ref={(node) => setCardRef(project.id, node)}
-      data-project-id={project.id}
-    >
-      <div className="project-art" aria-hidden="true">
-        <span className="project-art-orbit" />
-        <span className="project-art-glyph">
-          {project.visual === "books"
-            ? "▤"
-            : project.visual === "api"
-              ? "{ }"
-              : project.visual === "atlas"
-                ? "✧"
-                : "✦"}
-        </span>
-        <span className="project-art-index">{project.number}</span>
-      </div>
+    <article className="project-card" id={`project-${project.id}`}>
       <div className="project-copy">
         <div className="project-meta">
-          <span>{project.kind}</span>
           <span className={`project-status project-status--${project.status}`}>
             {project.status === "in-progress"
               ? "In progress"
@@ -141,7 +143,10 @@ function ProjectCard({
                 : "Live"}
           </span>
         </div>
-        <h3>{project.name}</h3>
+        <h3>
+          <Icon name={projectIcons[project.visual]} className="project-icon" />
+          {project.name}
+        </h3>
         <p>{project.description}</p>
         <ul className="technology-list" aria-label="Technologies used">
           {project.technologies.map((technology) => (
@@ -166,33 +171,13 @@ function ProjectCard({
 }
 
 export function Portfolio() {
-  const [theme, setTheme] = useState<Theme>("night");
+  const [theme, setTheme] = useState<Theme>("daybreak");
   const [activeSection, setActiveSection] = useState("top");
-  const [activeRole, setActiveRole] = useState(0);
   const [activeCategory, setActiveCategory] = useState<SkillCategory | "All">(
     "All",
   );
-  const [selectedSkillId, setSelectedSkillId] = useState(skills[0].id);
-  const [activeCommand, setActiveCommand] =
-    useState<TerminalCommand>("whoami");
-  const [repoCount, setRepoCount] = useState<number | null>(null);
-  const [githubStatus, setGithubStatus] = useState("Loading public GitHub stats");
-  const [connectors, setConnectors] = useState<Connector[]>([]);
-  const [constellationSize, setConstellationSize] = useState({
-    width: 0,
-    height: 0,
-  });
   const [openCertification, setOpenCertification] = useState<number | null>(
     null,
-  );
-
-  const constellationRef = useRef<HTMLDivElement>(null);
-  const skillButtonRefs = useRef(new Map<string, HTMLButtonElement>());
-  const projectCardRefs = useRef(new Map<ProjectId, HTMLElement>());
-
-  const selectedSkill = useMemo(
-    () => skills.find((skill) => skill.id === selectedSkillId) ?? skills[0],
-    [selectedSkillId],
   );
 
   useEffect(() => {
@@ -213,147 +198,13 @@ export function Portfolio() {
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (media.matches) return;
-
-    const timer = window.setInterval(() => {
-      setActiveRole((current) => (current + 1) % profile.roles.length);
-    }, 2550);
-    return () => window.clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    const controller = new AbortController();
-
-    async function loadRepositoryCount() {
-      try {
-        const response = await fetch(
-          `https://api.github.com/users/${profile.github}`,
-          {
-            headers: { Accept: "application/vnd.github+json" },
-            signal: controller.signal,
-          },
-        );
-        if (!response.ok) {
-          throw new Error(`GitHub returned ${response.status}`);
-        }
-
-        const data: unknown = await response.json();
-        if (
-          typeof data !== "object" ||
-          data === null ||
-          !("public_repos" in data) ||
-          typeof data.public_repos !== "number"
-        ) {
-          throw new Error("GitHub response did not include a public repo count");
-        }
-
-        setRepoCount(data.public_repos);
-        setGithubStatus("Public repository count loaded from GitHub");
-      } catch (error) {
-        if (controller.signal.aborted) return;
-        console.error("Could not load the public GitHub repository count.", error);
-        setGithubStatus("Public GitHub stats are temporarily unavailable");
-      }
-    }
-
-    void loadRepositoryCount();
-    return () => controller.abort();
-  }, []);
-
-  const updateConstellation = useCallback(() => {
-    const root = constellationRef.current;
-    const skillNode = skillButtonRefs.current.get(selectedSkillId);
-    if (!root || !skillNode) return;
-
-    const rootRect = root.getBoundingClientRect();
-    const skillRect = skillNode.getBoundingClientRect();
-    const width = root.clientWidth;
-    const height = root.clientHeight;
-    const startX = skillRect.left + skillRect.width / 2 - rootRect.left;
-    const startY = skillRect.top + skillRect.height / 2 - rootRect.top;
-    const nextConnectors: Connector[] = [];
-
-    for (const projectId of selectedSkill.usedIn) {
-      const card = projectCardRefs.current.get(projectId);
-      if (!card) continue;
-
-      const cardRect = card.getBoundingClientRect();
-      const endX =
-        cardRect.left + Math.min(cardRect.width * 0.24, 140) - rootRect.left;
-      const endY = cardRect.top + Math.min(cardRect.height * 0.28, 90) - rootRect.top;
-      const bend = Math.max(50, Math.abs(endX - startX) * 0.38);
-      const direction = endX >= startX ? 1 : -1;
-
-      nextConnectors.push({
-        projectId,
-        path: `M ${startX} ${startY} C ${startX + bend * direction} ${startY}, ${endX - bend * direction} ${endY}, ${endX} ${endY}`,
-      });
-    }
-
-    setConstellationSize({ width, height });
-    setConnectors(nextConnectors);
-  }, [selectedSkill, selectedSkillId]);
-
-  useEffect(() => {
-    const root = constellationRef.current;
-    if (!root) return;
-
-    let frame = 0;
-    const scheduleUpdate = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(updateConstellation);
-    };
-    const observer = new ResizeObserver(scheduleUpdate);
-
-    observer.observe(root);
-    scheduleUpdate();
-    window.addEventListener("resize", scheduleUpdate);
-
-    return () => {
-      cancelAnimationFrame(frame);
-      observer.disconnect();
-      window.removeEventListener("resize", scheduleUpdate);
-    };
-  }, [updateConstellation]);
-
-  const setProjectCardRef = useCallback(
-    (id: ProjectId, node: HTMLElement | null) => {
-      if (node) projectCardRefs.current.set(id, node);
-      else projectCardRefs.current.delete(id);
-    },
-    [],
+  const visibleSkills =
+    activeCategory === "All"
+      ? skills
+      : skills.filter((skill) => skill.category === activeCategory);
+  const availableCategories = skillCategories.filter((category) =>
+    skills.some((skill) => skill.category === category),
   );
-
-  const handleSkillKeyDown = (
-    event: KeyboardEvent<HTMLButtonElement>,
-    index: number,
-  ) => {
-    const columns = window.matchMedia("(max-width: 430px)").matches
-      ? 2
-      : window.matchMedia("(max-width: 900px)").matches
-        ? 3
-        : 4;
-    let nextIndex = index;
-    if (event.key === "ArrowRight") nextIndex = (index + 1) % skills.length;
-    if (event.key === "ArrowLeft")
-      nextIndex = (index - 1 + skills.length) % skills.length;
-    if (event.key === "ArrowDown")
-      nextIndex = Math.min(index + columns, skills.length - 1);
-    if (event.key === "ArrowUp") nextIndex = Math.max(index - columns, 0);
-    if (nextIndex !== index) {
-      event.preventDefault();
-      const next = skills[nextIndex];
-      setSelectedSkillId(next.id);
-      skillButtonRefs.current.get(next.id)?.focus();
-    }
-  };
-
-  const featuredCount = projects.length;
-  const shippedCount = projects.filter(
-    (project) => project.status !== "in-progress",
-  ).length;
   const closeCertification = useCallback(
     () => setOpenCertification(null),
     [],
@@ -361,24 +212,11 @@ export function Portfolio() {
 
   return (
     <div className="site-shell" data-theme={theme} id="top">
-      <div className="sky-noise" aria-hidden="true" />
-      <div className="sky-glow sky-glow--one" aria-hidden="true" />
-      <div className="sky-glow sky-glow--two" aria-hidden="true" />
-
       <header className="masthead">
-        <a className="wordmark" href="#top" aria-label="Midnight Observatory home">
-          <span className="wordmark-icon" aria-hidden="true">
-            ✦
-          </span>
-          <span>
-            MIDNIGHT <b>OBSERVATORY</b>
-          </span>
+        <a className="wordmark" href="#top" aria-label="Muhammadsodik home">
+          Muhammadsodik
         </a>
         <div className="masthead-actions">
-          <span className="availability">
-            <span className="availability-dot" aria-hidden="true" />
-            OPEN TO LEARNING
-          </span>
           <button
             className="theme-toggle"
             type="button"
@@ -389,12 +227,12 @@ export function Portfolio() {
             }
             aria-label={
               theme === "night"
-                ? "Switch to the daybreak color theme"
-                : "Switch to the night sky color theme"
+                ? "Switch to light mode"
+                : "Switch to dark mode"
             }
           >
-            <span aria-hidden="true">{theme === "night" ? "☼" : "☾"}</span>
-            {theme === "night" ? "Daybreak" : "Night sky"}
+            <Icon name={theme === "night" ? "sun" : "moon"} />
+            {theme === "night" ? "Light" : "Dark"}
           </button>
         </div>
       </header>
@@ -405,13 +243,9 @@ export function Portfolio() {
             key={item.id}
             className={`dock-link${activeSection === item.id ? " is-active" : ""}`}
             href={`#${item.id}`}
-            aria-label={item.label}
             aria-current={activeSection === item.id ? "location" : undefined}
-            title={item.label}
           >
-            <span className="dock-symbol" aria-hidden="true">
-              {item.symbol}
-            </span>
+            <Icon name={item.icon} className="dock-symbol" />
             <span className="dock-label">{item.label}</span>
           </a>
         ))}
@@ -420,346 +254,82 @@ export function Portfolio() {
       <main>
         <section className="hero-section section-frame" aria-labelledby="hero-title">
           <div className="hero-copy">
-            <p className="eyebrow">
-              <span className="eyebrow-star" aria-hidden="true">
-                ✦
-              </span>
-              FIELD NOTES · WEB & SOFTWARE
-            </p>
-            <p className="whoami-line">
-              <span aria-hidden="true">&gt;</span> observing: {profile.name}
-              <span className="terminal-caret" aria-hidden="true" />
-            </p>
-            <h1 id="hero-title">
-              Building small things
-              <br />
-              for a <span>wide-open web.</span>
-            </h1>
-            <p className="hero-role" aria-live="polite">
-              I’m <span key={activeRole}>{profile.roles[activeRole]}</span>
-              <i aria-hidden="true">.</i>
-            </p>
-            <p className="hero-bio">
-              <span>Computer Engineering student at Gachon University.</span>
-              <span>Learning through useful web apps and public APIs.</span>
-              <span>Curious about accessible, thoughtful software.</span>
-            </p>
+            <h1 id="hero-title">{profile.name}</h1>
+            <p className="hero-role">{profile.role}</p>
+            <p className="hero-bio">{profile.intro}</p>
             <div className="hero-actions">
               <a className="button button--primary" href="#projects">
-                Explore my projects <span aria-hidden="true">↘</span>
+                View projects <Icon name="arrow" />
               </a>
               <a className="button button--quiet" href="#contact">
-                Get in touch <span aria-hidden="true">↗</span>
-              </a>
-              <a className="button button--quiet" href="/resume">
-                Resume <span aria-hidden="true">↗</span>
+                Contact <Icon name="arrow" />
               </a>
             </div>
-            <a
-              className="scroll-cue"
-              href="#about"
-              aria-label="Scroll to About"
-            >
-              <span className="scroll-line" aria-hidden="true" />
-              SCROLL TO EXPLORE
-            </a>
           </div>
 
-          <div className="portrait-stage" aria-label="Portfolio photo">
-            <div className="portrait-orbit portrait-orbit--outer" aria-hidden="true" />
-            <div className="portrait-orbit portrait-orbit--inner" aria-hidden="true" />
+          <div className="portrait-stage">
             <div className="portrait-window">
               <Image
-                src="/images/portfolio-photo.jpg"
-                alt="Portfolio headshot photo of Muhammadsodik"
+                src="/images/portfolio-photo.png"
+                alt={profile.name}
                 fill
                 priority
                 sizes="(max-width: 720px) 72vw, 360px"
                 className="portrait-image"
               />
-              <div className="portrait-wash" aria-hidden="true" />
-              <span className="portrait-caption">PORTFOLIO PHOTO · 01</span>
             </div>
-            <span className="orbit-chip orbit-chip--one">JavaScript</span>
-            <span className="orbit-chip orbit-chip--two">Open APIs</span>
-            <span className="orbit-chip orbit-chip--three">Web craft</span>
-            <span className="orbit-chip orbit-chip--four">Curiosity</span>
-            <span className="portrait-star portrait-star--one" aria-hidden="true">
-              ✧
-            </span>
-            <span className="portrait-star portrait-star--two" aria-hidden="true">
-              ✦
-            </span>
-          </div>
-
-          <div className="readings" aria-label="Portfolio readings">
-            <div className="reading">
-              <span className="reading-value">
-                <Counter value={repoCount} suffix="+" />
-              </span>
-              <span className="reading-label">PUBLIC REPOS</span>
-            </div>
-            <div className="reading">
-              <span className="reading-value">
-                <Counter value={featuredCount} />
-              </span>
-              <span className="reading-label">PROJECTS TRACKED</span>
-            </div>
-            <div className="reading">
-              <span className="reading-value">
-                <Counter value={certifications.length} />
-              </span>
-              <span className="reading-label">VERIFIED CERTS</span>
-            </div>
-            <div className="reading">
-              <span className="reading-value">
-                <Counter value={shippedCount} />
-              </span>
-              <span className="reading-label">PROJECTS SHIPPED</span>
-            </div>
-            <span className="sr-only" aria-live="polite">
-              {githubStatus}
-            </span>
           </div>
         </section>
 
         <section className="section-frame about-section" id="about">
           <SectionHeading
-            number="01"
-            label="A LITTLE ABOUT ME"
-            title="Engineer in the making."
-            subtitle="Learning by exploring, building, and sharing what works."
+            icon="about"
+            title="About"
           />
-
-          <div className="about-grid">
-            <div className="about-copy">
-              {profile.bio.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
-              ))}
-              <div className="about-signoff">
-                <span className="signoff-star" aria-hidden="true">
-                  ✦
-                </span>
-                <span>Always curious. Always building.</span>
-              </div>
-            </div>
-
-            <div className="mission-console">
-              <div className="console-topline">
-                <span className="console-light" aria-hidden="true" />
-                <span>MISSION CONSOLE</span>
-                <span className="console-state">ONLINE</span>
-              </div>
-              <div className="console-screen">
-                <p className="console-prompt">muhammadsodik@observatory ~ %</p>
-                <p className="console-command">
-                  $ {activeCommand}
-                  <span className="terminal-caret" aria-hidden="true" />
-                </p>
-                <p className="console-output" aria-live="polite">
-                  {terminalCommands[activeCommand]}
-                </p>
-              </div>
-              <div className="command-list" aria-label="Mission console commands">
-                {(Object.keys(terminalCommands) as TerminalCommand[]).map(
-                  (command) => (
-                    <button
-                      type="button"
-                      key={command}
-                      className={
-                        activeCommand === command ? "command-chip is-active" : "command-chip"
-                      }
-                      onClick={() => setActiveCommand(command)}
-                      aria-pressed={activeCommand === command}
-                    >
-                      {command}
-                    </button>
-                  ),
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="timeline-block">
-            <div className="subsection-title">
-              <span>THE ORBIT SO FAR</span>
-              <span className="subsection-rule" aria-hidden="true" />
-              <span className="subsection-note">A growing journey</span>
-            </div>
-            <ol className="orbit-timeline">
-              {timeline.map((milestone, index) => (
-                <li className="timeline-stop" key={milestone.title}>
-                  <span className="timeline-orbit" aria-hidden="true" />
-                  <span className="timeline-number">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <span className="timeline-when">{milestone.when}</span>
-                  <h3>{milestone.title}</h3>
-                  <p className="timeline-place">{milestone.place}</p>
-                  <p className="timeline-detail">{milestone.detail}</p>
-                </li>
-              ))}
-            </ol>
+          <div className="about-card">
+            <p>{profile.bio[0]}</p>
           </div>
         </section>
 
-        <div className="work-atlas" ref={constellationRef}>
-          <svg
-            className="constellation-lines"
-            viewBox={`0 0 ${constellationSize.width} ${constellationSize.height}`}
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            {connectors.map((connector) => (
-              <path
-                className="constellation-path"
-                key={connector.projectId}
-                d={connector.path}
-              />
+        <section className="section-frame skills-section" id="skills">
+          <SectionHeading icon="skills" title="Skills" />
+          <div className="category-filters" aria-label="Filter skills">
+            {(["All", ...availableCategories] as const).map((category) => (
+              <button
+                type="button"
+                key={category}
+                className={`filter-chip${activeCategory === category ? " is-active" : ""}`}
+                onClick={() => setActiveCategory(category)}
+                aria-pressed={activeCategory === category}
+              >
+                {category}
+              </button>
             ))}
-          </svg>
+          </div>
+          <div className="skill-list">
+            {visibleSkills.map((skill) => (
+              <article className="skill-item" key={skill.id}>
+                <span className="skill-icon">
+                  <SkillMark skillId={skill.icon ?? ""} mark={skill.mark} />
+                </span>
+                <h3>{skill.name}</h3>
+              </article>
+            ))}
+          </div>
+        </section>
 
-          <section className="section-frame skills-section" id="skills">
-            <SectionHeading
-              number="02"
-              label="THE STAR MAP"
-              title="Pick a skill. Find the work."
-              subtitle="Every skill here points to a project where I’ve used it."
-            />
+        <section className="section-frame projects-section" id="projects">
+          <SectionHeading icon="projects" title="Projects" />
+          <div className="project-grid">
+            {projects.map((project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))}
+          </div>
+        </section>
 
-            <div className="category-filters" aria-label="Filter skills by category">
-              {(["All", ...skillCategories] as const).map((category) => (
-                <button
-                  type="button"
-                  key={category}
-                  className={
-                    activeCategory === category
-                      ? "filter-chip is-active"
-                      : "filter-chip"
-                  }
-                  onClick={() => setActiveCategory(category)}
-                  aria-pressed={activeCategory === category}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-            {activeCategory !== "All" &&
-              !skills.some((skill) => skill.category === activeCategory) && (
-                <p className="empty-filter-note">
-                  No {activeCategory} skills are documented yet. I only add a
-                  skill when it connects to real project work.
-                </p>
-              )}
-
-            <div className="skills-layout">
-              <div className="skill-map" role="group" aria-label="Select a skill">
-                {skills.map((skill, index) => {
-                  const dimmed =
-                    activeCategory !== "All" &&
-                    skill.category !== activeCategory;
-                  return (
-                    <button
-                      key={skill.id}
-                      ref={(node) => {
-                        if (node) skillButtonRefs.current.set(skill.id, node);
-                        else skillButtonRefs.current.delete(skill.id);
-                      }}
-                      type="button"
-                      className={`skill-star${selectedSkillId === skill.id ? " is-selected" : ""}${dimmed ? " is-dimmed" : ""}`}
-                      onClick={() => setSelectedSkillId(skill.id)}
-                      onKeyDown={(event) => handleSkillKeyDown(event, index)}
-                      aria-pressed={selectedSkillId === skill.id}
-                      aria-label={`${skill.name}, ${skill.category}`}
-                      title={`${skill.name} · ${skill.category}`}
-                    >
-                      <span className="skill-icon">
-                        <SkillMark skillId={skill.icon ?? ""} mark={skill.mark} />
-                      </span>
-                      <span className="skill-name">{skill.name}</span>
-                      <span className="skill-category">{skill.category}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              <aside className="skill-detail" aria-live="polite" aria-atomic="true">
-                <div className="detail-starfield" aria-hidden="true">
-                  <span>✦</span>
-                  <span>✧</span>
-                  <span>·</span>
-                </div>
-                <div className="detail-mark">
-                  <SkillMark
-                    skillId={selectedSkill.icon ?? ""}
-                    mark={selectedSkill.mark}
-                  />
-                </div>
-                <p className="detail-kicker">{selectedSkill.category}</p>
-                <h3>{selectedSkill.name}</h3>
-                <p className="detail-note">{selectedSkill.note}</p>
-                <div className="used-in-block">
-                  <span className="used-in-label">CONNECTED PROJECTS</span>
-                  <ul className="used-in-list">
-                    {selectedSkill.usedIn.map((projectId) => {
-                      const project = projects.find(
-                        (item) => item.id === projectId,
-                      );
-                      if (!project) return null;
-                      return (
-                        <li key={projectId}>
-                          <a href={`#project-${projectId}`}>
-                            <span className="connection-dot" aria-hidden="true">
-                              ✦
-                            </span>
-                            {project.name}
-                            <span aria-hidden="true">↗</span>
-                          </a>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              </aside>
-            </div>
-            <p className="constellation-hint">
-              <span aria-hidden="true">⌁</span> The gold paths connect your
-              selected skill to the projects below. Use arrow keys to explore
-              the skill stars.
-            </p>
-          </section>
-
-          <section className="section-frame projects-section" id="projects">
-            <SectionHeading
-              number="04"
-              label="SELECTED WORK"
-              title="Built under these skies."
-              subtitle="A few projects, experiments, and works in progress."
-            />
-            <div className="project-grid">
-              {projects.map((project) => (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  active={selectedSkill.usedIn.includes(project.id)}
-                  setCardRef={setProjectCardRef}
-                />
-              ))}
-            </div>
-          </section>
-        </div>
-
-        <section
-          className="section-frame certifications-section"
-          id="certifications"
-        >
-          <SectionHeading
-            number="03"
-            label="VERIFIED LEARNING"
-            title="Mission patches."
-            subtitle="Credentials are listed only when I can provide real details and a verification source."
-          />
-          {certifications.length > 0 ? (
+        {certifications.length > 0 && (
+          <section className="section-frame certifications-section" id="certifications">
+            <SectionHeading icon="certificate" title="Certificates" />
             <div className="certification-grid">
               {certifications.map((certification, index) => (
                 <article className="cert-card" key={`${certification.issuer}-${certification.title}`}>
@@ -789,24 +359,8 @@ export function Portfolio() {
                 </article>
               ))}
             </div>
-          ) : (
-            <div className="cert-empty">
-              <span className="empty-constellation" aria-hidden="true">
-                ✧ <b>·</b> ✦ <b>·</b> ✧
-              </span>
-              <div>
-                <p className="empty-kicker">NO PATCHES LOGGED YET</p>
-                <h3>Only the real ones belong here.</h3>
-                <p>
-                  I haven’t added a verified certificate record yet. This
-                  section will show the issuer, date, covered topics, and a
-                  working verification link when those details are ready.
-                </p>
-              </div>
-              <span className="cert-count">{certifications.length} verified</span>
-            </div>
-          )}
-        </section>
+          </section>
+        )}
 
         {openCertification !== null && certifications[openCertification] && (
           <CertificationDialog
@@ -818,35 +372,20 @@ export function Portfolio() {
         <section className="section-frame resume-section" id="resume">
           <div className="resume-card">
             <div className="resume-copy">
-              <p className="eyebrow">05 · THE FIELD GUIDE</p>
-              <h2>A one-page snapshot.</h2>
-              <p>
-                Explore a concise resume built from the projects and skills
-                documented here. Use your browser’s print dialog to save it as
-                a PDF.
-              </p>
+              <SectionHeading icon="resume" title="Resume" />
+              <p>View or save my resume as a PDF.</p>
             </div>
             <a className="button button--primary" href="/resume">
-              Open printable resume <span aria-hidden="true">↗</span>
+              View resume <Icon name="external" />
             </a>
           </div>
         </section>
 
         <section className="section-frame contact-section" id="contact">
-          <SectionHeading
-            number="06"
-            label="SIGNAL FROM EARTH"
-            title="Let’s keep in touch."
-            subtitle="Have a project, a question, or a good idea? Find me on GitHub."
-          />
+          <SectionHeading icon="contact" title="Contact" />
           <div className="contact-card">
-            <span className="contact-star" aria-hidden="true">
-              ✦
-            </span>
             <div>
-              <p className="contact-kicker">PUBLIC PROFILE</p>
               <h3>{profile.github}</h3>
-              <p>Follow along as I learn, build, and share new work.</p>
             </div>
             <a
               className="button button--primary"
@@ -854,47 +393,36 @@ export function Portfolio() {
               target="_blank"
               rel="noreferrer"
             >
-              Open GitHub <span aria-hidden="true">↗</span>
+              Open GitHub <Icon name="external" />
             </a>
           </div>
         </section>
       </main>
 
       <footer className="site-footer">
-        <a href="#top" className="footer-mark">
-          <span aria-hidden="true">✦</span> RUZIBOY
-        </a>
-        <span>Made with curiosity, code, and a little stardust.</span>
-        <a href="#top">Back to the sky ↑</a>
+        <a href="#top" className="footer-mark">Muhammadsodik</a>
+        <a href="#top">Back to top ↑</a>
       </footer>
     </div>
   );
 }
 
 function SectionHeading({
-  number,
-  label,
+  icon,
   title,
   subtitle,
 }: {
-  number: string;
-  label: string;
+  icon: IconName;
   title: string;
-  subtitle: string;
+  subtitle?: string;
 }) {
   return (
     <div className="section-heading">
-      <div className="section-plate" aria-hidden="true">
-        <span>{number}</span>
-      </div>
+      <Icon name={icon} className="section-heading-icon" />
       <div className="section-heading-copy">
-        <p className="section-label">{label}</p>
         <h2>{title}</h2>
-        <p className="section-subtitle">{subtitle}</p>
+        {subtitle && <p className="section-subtitle">{subtitle}</p>}
       </div>
-      <span className="heading-star" aria-hidden="true">
-        ✧
-      </span>
     </div>
   );
 }
